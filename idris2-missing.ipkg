@@ -1,0 +1,37 @@
+package idris2-missing
+
+brief = "Some missing modules of Idris2"
+version = "0.0"
+authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
+license = "MIT"
+
+sourcedir = "./src"
+depends = contrib
+
+modules = Control.App.Fresh
+        , Data.Fixed
+        , Data.Hash
+        , Data.Hashtable
+        , Data.Hashcons
+        , Data.Bitset.Classes
+        , Data.Bitset.Tiny
+        , Data.Bitset.IOBitset
+        , Data.Integral.Gcd
+        , Data.Rational
+        , Data.Time.Clock
+        , Data.Time.Clock.DiffTime
+        , Data.Time.Clock.UTCTime
+        , Data.Time.Clock.POSIX
+        , Data.Time.Calendar
+        , Data.Time.Calendar.Types
+        , Data.Time.Calendar.Days
+        , Data.Time.Calendar.CalendarDiffDays
+        , Data.Time.Calendar.Month
+        , Data.Time.Calendar.MonthDay
+        , Data.Time.Calendar.OrdinalDate
+        , Data.Time.Calendar.Julian
+        , Data.Time.Calendar.Gregorian
+        , Data.Time.Calendar.WeekDate
+        , Test.Unit.Spec
+
+
