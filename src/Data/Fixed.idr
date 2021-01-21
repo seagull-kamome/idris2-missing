@@ -6,8 +6,8 @@
 module Data.Fixed
 
 
-import Data.List
 import Data.Strings
+import Data.String.Extra
 
 %default total
 
@@ -17,6 +17,7 @@ public export
 data Fixed : Nat -> Type where
   MkFixed : Integer -> Fixed n
 
+public export
 expToResolution : Nat -> Integer
 expToResolution = go 1 where
   go : Integer -> Nat -> Integer
@@ -53,13 +54,13 @@ partial public export
 public export
 {n:Nat} -> Show (Fixed n) where
   show (MkFixed x) = if n == 0 then show x
-                               else if x < 0 then "-" ++ go x
+                               else if x < 0 then "-" ++ go (negate x)
                                else go x where
     go : Integer -> String
     go x = let r = expToResolution n
                i = x `div` r
                d' = show $ x `mod` r
-            in show i ++ "." ++ concat (replicate (fromInteger (r - cast (strLength d'))) " ") ++ d'
+            in show i ++ "." ++ replicate (fromInteger $ cast $ cast n - strLength d') '0' ++ d'
 
 -- --------------------------------------------------------------------------
 
