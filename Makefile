@@ -2,6 +2,7 @@
 TESTS:= Test-Data-Bitset
 # TESTS+= Test-Control-App-Fresh
 TESTS+= Test-Data-Integral
+TESTS+= Test-Text-Format
 
 all: libs tests
 

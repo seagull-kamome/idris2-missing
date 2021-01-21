@@ -33,5 +33,6 @@ modules = Control.App.Fresh
         , Data.Time.Calendar.Gregorian
         , Data.Time.Calendar.WeekDate
         , Test.Unit.Spec
+        , Text.Format.Decimal
 
 
