@@ -6,6 +6,8 @@ import Data.Time.Calendar.MonthDay
 import Data.Time.Calendar.Days
 import Data.Time.Calendar.CalendarDiffDays
 
+import Text.Format.Decimal
+
 %default total
 
 ||| Convert to proleptic Gregorian calendar.
@@ -33,13 +35,14 @@ fromGregorianValid year month day =
     Just yd => fromOrdinalDateValid year yd
 
 
-{-
+
 ||| Show in ISO 8601 format (yyyy-mm-dd)
-showGregorian : Day -> String
-showGregorian date = (show4 y) ++ "-" ++ (show2 m) ++ "-" ++ (show2 d)
-where
-	(y, m, d) = toGregorian date
--}
+export showGregorian : Day -> String
+showGregorian x with (toGregorian x)
+  showGregorian x | (y, m, d) =
+    format' (zeroPad 4) y ++ "-" ++ format' (zeroPad 2) m ++ "-" ++ format' (zeroPad 2) d
+
+public export Show Day where show = showGregorian -- orphaned instance
 
 
 

@@ -3,9 +3,11 @@ module Data.Time.Calendar.Month
 import public Data.Time.Calendar.Types
 import Data.Time.Calendar.Days
 import Data.Time.Calendar.Gregorian
+import Text.Format.Decimal
 
 %default total
 
+-- ---------------------------------------------------------------------------
 
 ||| An absolute count of common calendar months.
 ||| Number is equal to @(year * 12) + (monthOfYear - 1)@.
@@ -16,6 +18,8 @@ public export Cast Integer Month where cast = MkMonth
 
 public export Eq Month where (MkMonth x) == (MkMonth y) = x == y
 public export Ord Month where compare (MkMonth x) (MkMonth y) = compare x y
+
+-- ---------------------------------------------------------------------------
 
 export addMonths : Integer -> Month -> Month
 addMonths n (MkMonth x) = MkMonth $ x + n
@@ -40,22 +44,30 @@ fromYearMonthValid y m =
   else Just $ MkMonth $ y * 12 + cast (m - 1)
 
 
-
-toMonthDay : Day -> (Month, DayOfMonth)
+export toMonthDay : Day -> (Month, DayOfMonth)
 toMonthDay d = let
   (y, m, d) = toGregorian d
   in (MkMonth (y * 12 + cast (max 0 $ min 11 m)), d)
 
 
-fromMonth : Month -> DayOfMonth -> Day
+export fromMonth : Month -> DayOfMonth -> Day
 fromMonth m dm = let
   (y, my) = toYearMonth m
   in fromGregorian y my dm
 
 
-fromMonthDayValid : Month -> DayOfMonth -> Maybe Day
+export fromMonthDayValid : Month -> DayOfMonth -> Maybe Day
 fromMonthDayValid m dm = let 
   (y, my) = toYearMonth m
   in fromGregorianValid y my dm
+
+
+public export
+Show Month where
+  show m = let
+    (y, my) = toYearMonth m
+    in format' (record { width = Just 4, pad = Just '0' }) y
+       ++ format' (record { width = Just 2, pad = Just '0' }) my
+
 
 -- vim: tw=80 sw=2 expandtab :

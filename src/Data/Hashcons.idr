@@ -1,3 +1,8 @@
+||| Hashconsing App
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module Data.Hashcons
 
 import Control.App

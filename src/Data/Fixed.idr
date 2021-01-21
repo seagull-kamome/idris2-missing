@@ -1,4 +1,10 @@
+||| Fixed point fractional number. - Ported from Haskell base.
+|||
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+|||
 module Data.Fixed
+
 
 import Data.List
 import Data.Strings

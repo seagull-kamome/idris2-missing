@@ -3,6 +3,8 @@ module Data.Time.Calendar.OrdinalDate
 import Data.Time.Calendar.Days
 import public Data.Time.Calendar.Types
 
+import Text.Format.Decimal
+
 %default total
 
 export isLeapYear : Year -> Bool
@@ -22,6 +24,10 @@ toOrdinalDate (ModifiedJulianDay mjd) =
       y        = min (d `div` 365) 3
    in (quadcent * 400 + cent * 100 + quad * 4 + y + 1,
        fromInteger (d - (y * 365) + 1))
+
+showOrdinalDate : Day -> String
+showOrdinalDate x with (toOrdinalDate x)
+  showOrdinalDate x | (y, dy) = format' (zeroPad 4) y ++ format' (zeroPad 2) dy
 
 ||| Convert from ISO 8601 Ordinal Date format.
 ||| Invalid day numbers will be clipped to the correct range (1 to 365 or 366).

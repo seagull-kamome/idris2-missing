@@ -1,3 +1,8 @@
+||| Simple mutable hashtable.
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module Data.Hashtable
 
 import Data.So

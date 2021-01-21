@@ -1,3 +1,8 @@
+||| Rational number - Ported from Haskell base
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module Data.Rational
 
 import Data.So

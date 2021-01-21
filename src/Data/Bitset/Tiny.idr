@@ -1,3 +1,8 @@
+||| Using single machine-word as Bitarray.
+|||
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+|||
 module Data.Bitset.Tiny
 
 import Data.Bitset.Classes

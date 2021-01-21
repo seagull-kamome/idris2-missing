@@ -1,3 +1,8 @@
+||| Universal clock - Ported from Haskell time package.
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module Data.Time.Clock
 
 import Data.Fixed
@@ -32,4 +37,4 @@ Ord UniversalTime where
 
 
 
-
+-- vim: tw=80 sw=2 expandtab :

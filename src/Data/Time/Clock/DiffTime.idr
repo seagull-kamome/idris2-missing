@@ -4,6 +4,7 @@ import Data.Fixed
 
 %default total
 
+-- --------------------------------------------------------------------------
 
 public export
 record DiffTime' (nominal:Bool) where
@@ -29,7 +30,10 @@ Neg (DiffTime' b) where
   negate x = { seconds $= negate } x
   x - y = SecondsToDiffTime $ x.seconds - y.seconds
 
+public export Show (DiffTime' b) where show x = show x.seconds ++ "s"
 
+
+-- --------------------------------------------------------------------------
 
 export %inline picosecondsToDiffTime : {nominal:Bool} -> Integer -> DiffTime' nominal
 picosecondsToDiffTime x = SecondsToDiffTime $ MkFixed x

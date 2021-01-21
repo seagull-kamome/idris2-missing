@@ -1,19 +1,17 @@
+||| A general purpose Hashing library (not cryptographic)
+||| 
+|||   The core hash is djb2, which is very fast but does not have the best distribution
+|||   Source: http://www.cse.yorku.ca/~oz/hash.html
+||| 
+|||   The salted version and the magic salt are copied from Haskell's bloomfilter library
+|||   Source: https://hackage.haskell.org/package/bloomfilter-2.0.0.0/docs/src/Data-BloomFilter-Hash.html#Hashable
+||| 
+|||   Portedd from Idris1 by HATTORI, Hiroki 2021.
 module Data.Hash
 
 import Data.Vect
 
 %default total
-
-{- A general purpose Hashing library (not cryptographic)
-
-   The core hash is djb2, which is very fast but does not have the best distribution
-   Source: http://www.cse.yorku.ca/~oz/hash.html
-
-   The salted version and the magic salt are copied from Haskell's bloomfilter library
-   Source: https://hackage.haskell.org/package/bloomfilter-2.0.0.0/docs/src/Data-BloomFilter-Hash.html#Hashable
-
-   Migrate from Idris1 by HATTORI, Hiroki 2021.
--}
 
 ||| A type that can be hashed
 public export

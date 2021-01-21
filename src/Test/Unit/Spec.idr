@@ -16,11 +16,11 @@ data TestFailure : Type where
   UnexpectedMaybe : Show a => (actual : Maybe a) -> TestFailure
   UnexpectedEither : (Show a, Show b) => (actual : Either a b) -> TestFailure
 Show TestFailure where
-  show (Unexpected e a) = "Expected: " ++ show e ++ ", But actual is: " ++ show a
-  show (UnexpectedMaybe x@(Just _)) = "Expected: Nothing, But actual is: " ++ show x
-  show (UnexpectedMaybe x@Nothing) = "Expected: Just, But actual is: " ++ show x
-  show (UnexpectedEither x@(Left _)) = "Expected: Right, But actual is: " ++ show x
-  show (UnexpectedEither x@(Right _)) = "Expected: Left, But actual is: " ++ show x
+  show (Unexpected e a) = "Expected " ++ show e ++ ", But actual is " ++ show a
+  show (UnexpectedMaybe x@(Just _)) = "Expected Nothing, But actual is " ++ show x
+  show (UnexpectedMaybe x@Nothing) = "Expected Just _, But actual is " ++ show x
+  show (UnexpectedEither x@(Left _)) = "Expected Right _, But actual is " ++ show x
+  show (UnexpectedEither x@(Right _)) = "Expected Left _, But actual is " ++ show x
 
 
 public export
