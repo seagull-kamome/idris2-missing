@@ -3,7 +3,7 @@
 ||| Copyright 2021, HATTORI, Hiroki
 ||| This file is released under the MIT license, see LICENSE for more detail.
 ||| 
-module Data.Hashcons
+module Control.App.Hashcons
 
 import Control.App
 import Data.So

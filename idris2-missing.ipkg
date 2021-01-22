@@ -12,7 +12,7 @@ modules = Control.App.Fresh
         , Data.Fixed
         , Data.Hash
         , Data.Hashtable
-        , Data.Hashcons
+        , Control.App.Hashcons
         , Data.Bitset.Classes
         , Data.Bitset.Tiny
         , Data.Bitset.IOBitset
