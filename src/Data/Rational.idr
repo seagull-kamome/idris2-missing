@@ -6,6 +6,7 @@
 module Data.Rational
 
 import Data.So
+import Data.Maybe
 
 import Data.Integral.Gcd
 
@@ -18,7 +19,7 @@ record Rational where
   constructor MkRational
   num : Integer
   den : Integer  -- FIXME: denominator is always positive or zero
-  -- {denIsPositive : So (den >= 0)}
+  {auto denIsPositive : So (den >= 0)}
 
 
 -- --------------------------------------------------------------------------
@@ -36,14 +37,17 @@ export notANumber : Rational
 notANumber = MkRational 0 0
 
 
-export reduce : (num:Integer) -> (den:Integer) -> {auto ok:So (den > 0)} -> Rational
-reduce x y = let d = gcd x y in MkRational (x `div` d) (y `div` d)
+export reduce : (num:Integer) -> (den:Integer) -> {auto ok:So (den >= 0)} -> Rational
+reduce _ 0 = notANumber
+reduce x y = let
+  d = gcd x y
+  in MkRational {denIsPositive=believe_me Oh} (x `div` d) (y `div` d)
 
 infixr 9 %:
 
 export
-(%:) : (num:Integer) -> (den:Integer) -> {auto _:So (den /= 0)} -> Rational
-(%:) num den with (choose (den > 0))
+(%:) : (num:Integer) -> (den:Integer) -> Rational
+(%:) num den with (choose (den >= 0))
   (%:) num den | Left _ = reduce num den
   (%:) num den | Right _ = reduce {ok=believe_me Oh} (negate num) (negate den) -- FIXME
 
@@ -62,32 +66,45 @@ public export Cast Integer Rational where cast x = MkRational x 1
 Cast ty Integer => Cast ty Rational where cast x = MkRational (cast x) 1
 
 
-partial public export
+public export
 Num Rational where
-  x + y with (choose $ x.den * y.den > 0)
+  x + y with (choose $ x.den * y.den >= 0)
     x + y | Left _ = reduce (x.num * y.den + y.num * x.den) (x.den * y.den)
-  x * y with (choose $ x.den * y.den > 0)
+    x + y | Right _ = ?lhs_rational_add_right
+  x * y with (choose $ x.den * y.den >= 0)
     x * y | Left _ = reduce (x.num * y.num) (x.den * y.den)
+    x * y | Right _ = ?lhs_rational_mult_right
   fromInteger x = MkRational x 1
 
-partial public export
+public export
 Neg Rational where
-  negate x = MkRational (negate x.num) x.den
-  x - y with (choose $ x.den * y.den > 0)
+  negate x = MkRational {denIsPositive=x.denIsPositive} (negate x.num) x.den
+  x - y with (choose $ x.den * y.den >= 0)
     x - y | Left _ = reduce (x.num * y.den - x.num * x.den) (x.den * y.den)
+    x - y | Right _ = notANumber
 
-public export Abs Rational where abs x = MkRational (abs x.num) x.den
+public export
+Abs Rational where
+  abs x = MkRational {denIsPositive=x.denIsPositive} (abs x.num) x.den
 --     signum x = MkRational (signum x.num) 1
 
 
-partial public export
+public export
 Fractional Rational where
   x / y with (choose $ y.num * x.den /= 0)
     x / y | Left _ = (x.num * y.den) %: (y.num * x.den)
-  recip x with (choose $ x.num > 0)
+    x / y | Right _ = notANumber
+  recip x with (choose $ x.num >= 0)
     recip x | Left _ = MkRational x.den x.num
-    recip x | Right _ with (choose $ negate x.num > 0)
+    recip x | Right _ with (choose $ negate x.num >= 0)
       recip x | Right _ | Left _ = MkRational (negate x.den) (negate x.num)
+      recip x | Right _ | Right _ = ?lhs_rational_recip_impossible
+
+
+-- --------------------------------------------------------------------------
+
+floor : Rational -> Maybe Integer
+floor x = toMaybe (x.den /= 0) $ x.num `div` x.den
 
 
 
