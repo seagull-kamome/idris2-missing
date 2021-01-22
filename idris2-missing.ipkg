@@ -32,6 +32,8 @@ modules = Control.App.Fresh
         , Data.Time.Calendar.Julian
         , Data.Time.Calendar.Gregorian
         , Data.Time.Calendar.WeekDate
+        , Data.Time.LocalTime.TimeZone
+        , Data.Time.LocalTime.TimeOfDay
         , Test.Unit.Spec
         , Text.Format.Decimal
 

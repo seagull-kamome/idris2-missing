@@ -17,8 +17,8 @@ export
 record Rational where
   constructor MkRational
   num : Integer
-  den : Integer  -- FIXME: denominator is always positive
-  -- {denIsPositive : So (den > 0)}
+  den : Integer  -- FIXME: denominator is always positive or zero
+  -- {denIsPositive : So (den >= 0)}
 
 
 -- --------------------------------------------------------------------------
@@ -41,6 +41,7 @@ reduce x y = let d = gcd x y in MkRational (x `div` d) (y `div` d)
 
 infixr 9 %:
 
+export
 (%:) : (num:Integer) -> (den:Integer) -> {auto _:So (den /= 0)} -> Rational
 (%:) num den with (choose (den > 0))
   (%:) num den | Left _ = reduce num den

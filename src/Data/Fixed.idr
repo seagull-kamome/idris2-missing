@@ -5,9 +5,12 @@
 |||
 module Data.Fixed
 
-
+import Data.So
+import Data.Maybe
 import Data.Strings
 import Data.String.Extra
+
+import Data.Rational
 
 %default total
 
@@ -23,6 +26,16 @@ expToResolution = go 1 where
   go : Integer -> Nat -> Integer
   go ans Z = ans
   go ans (S n) = go (ans * 10) n
+
+public export
+resolutionIsAlwaysGtZero : (n:Nat) -> (So (expToResolution n > 0))
+resolutionIsAlwaysGtZero n = believe_me Oh
+
+public export
+resolutionIsAlwaysNonZero : (n:Nat) -> (So (expToResolution n /= 0))
+resolutionIsAlwaysNonZero n = believe_me Oh
+
+
 
 public export resolution : {n:Nat} -> Fixed n -> Integer
 resolution {n=n} _ = expToResolution n
@@ -61,6 +74,24 @@ public export
                i = x `div` r
                d' = show $ x `mod` r
             in show i ++ "." ++ replicate (fromInteger $ cast $ cast n - strLength d') '0' ++ d'
+
+-- --------------------------------------------------------------------------
+
+public export
+{n:Nat} -> Cast Int (Fixed n) where
+  cast i = MkFixed $ (cast i) * expToResolution n
+public export
+{n:Nat} -> Cast Integer (Fixed n) where
+  cast i = MkFixed $ i * expToResolution n
+public export
+{n:Nat} -> Cast Rational (Maybe (Fixed n)) where
+  cast x = let d = denominator x
+               in toMaybe (d == 0) $ MkFixed $ numerator x * expToResolution n `div` d
+public export
+{n:Nat} -> Cast (Fixed n) Rational where
+  cast (MkFixed x) = let
+    _ = resolutionIsAlwaysNonZero n
+        in x %: expToResolution n
 
 -- --------------------------------------------------------------------------
 

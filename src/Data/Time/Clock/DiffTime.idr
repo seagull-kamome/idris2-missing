@@ -1,5 +1,6 @@
 module Data.Time.Clock.DiffTime
 
+import Data.So
 import Data.Fixed
 
 %default total
@@ -42,8 +43,7 @@ export %inline secondsToDiffTime : {nominal:Bool} -> Fixed 12 -> DiffTime' nomin
 secondsToDiffTime x = SecondsToDiffTime x
 
 
-export nominalDay : NominalDiffTime
+public export nominalDay : NominalDiffTime
 nominalDay = 86400
-
 
 
