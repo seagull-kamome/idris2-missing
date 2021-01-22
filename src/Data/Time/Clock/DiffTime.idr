@@ -43,7 +43,14 @@ export %inline secondsToDiffTime : {nominal:Bool} -> Fixed 12 -> DiffTime' nomin
 secondsToDiffTime x = SecondsToDiffTime x
 
 
-public export nominalDay : NominalDiffTime
+export %inline nominalDay : NominalDiffTime
 nominalDay = 86400
+
+
+export %inline scale : Integer -> DiffTime' b -> DiffTime' b
+scale n dt = SecondsToDiffTime $ scale n dt.seconds
+
+export %inline daysToDiffTime : Integer -> NominalDiffTime
+daysToDiffTime n = scale n nominalDay
 
 
