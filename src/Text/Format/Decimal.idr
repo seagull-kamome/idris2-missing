@@ -61,22 +61,26 @@ formatDecimal fmt sign dec frc = let
                      ++ str
 
 
+
 public export formatIntegral : (Show ty, Neg ty, Num ty, Ord ty) => DecimalFormat -> ty -> String
 formatIntegral fmt x =
   if x < 0
      then formatDecimal fmt fmt.minus (show $ negate x) ""
      else formatDecimal fmt fmt.plus (show x) ""
 
+
+
 public export formatFixed : {n:Nat} -> DecimalFormat -> Fixed n -> String
 formatFixed {n=n} fmt (MkFixed x') with (n)
   formatFixed {n=n} fmt (MkFixed x') | 0 = formatIntegral fmt x'
   formatFixed {n=n} fmt (MkFixed x') | _ = let
     (x, sign) = if x' < 0 then (negate x', fmt.minus) else (x', fmt.plus)
-    r = expToResolution n
+    MkResV _ r _ = expToResolution n
     dec = show $ x `div` r
     frc' = show $ x `mod` r
     frc = replicate (fromInteger $ cast $ cast n - strLength frc') '0' ++ frc'
     in formatDecimal fmt sign dec frc
+
 
 
 public export interface FormatDecimal t where format : DecimalFormat -> t -> String
