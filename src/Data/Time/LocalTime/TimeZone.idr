@@ -78,22 +78,6 @@ utc = MkTimeZone 0 False "UTC"
 
 
 {-
-getTimeZoneCTime :: CTime -> IO TimeZone
-getTimeZoneCTime ctime =
-    with
-        0
-        (\pdst ->
-             with
-                 nullPtr
-                 (\pcname -> do
-                      secs <- get_current_timezone_seconds ctime pdst pcname
-                      case secs of
-                          0x80000000 -> fail "localtime_r failed"
-                          _ -> do
-                              dst <- peek pdst
-                              cname <- peek pcname
-                              name <- peekCString cname
-                              return (TimeZone (div (fromIntegral secs) 60) (dst == 1) name)))
 
 toCTime :: Int64 -> IO CTime
 toCTime t = let
@@ -115,10 +99,7 @@ getTimeZone :: UTCTime -> IO TimeZone
 getTimeZone t = do
     ctime <- toCTime $ floor $ utcTimeToPOSIXSeconds t
     getTimeZoneCTime ctime
-
--- | Get the current time-zone.
-getCurrentTimeZone :: IO TimeZone
-getCurrentTimeZone = getSystemTime >>= getTimeZoneSystem
 -}
+
 
 -- vim: tw=80 sw=2 expandtab :
