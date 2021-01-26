@@ -85,7 +85,7 @@ export
 ConsoleTest = Has [Console, PrimIO, State TestStatus TestStatus]
 
 public export partial
-ConsoleTest e => Spec e where
+[markdown] ConsoleTest e => Spec e where
   describe sbj bdy = do
     sts <- get TestStatus
     putStrLn $ (pack $ replicate (fromInteger $ cast sts.nestlevel + 1) '#') ++ (if sts.skipping then " [SKIP] " else " ") ++ sbj
@@ -116,11 +116,59 @@ export partial consoleRunSpec : Has [Console, PrimIO] e =>
                                  -> App e ()
 consoleRunSpec tst = new (MkTestStatus 0 0 0 False 0) $ do
   putStrLn "------------------------------------------------"
-  tst
+  tst @{markdown}
   r <- get TestStatus
   putStrLn "------------------------------------------------"
-  putStrLn "Finished"
+  putStrLn "Done"
   putStrLn $ "  Total desc. : " ++ show r.numDescribes
   putStrLn $ "  Total tests. : " ++ show r.numTests
   putStrLn $ "  Total failure. : " ++ show r.numFailed
+
+
+
+data TestAt : Type where
+
+public export partial
+[simple] Has [ConsoleTest, State TestAt (List String)] e => Spec e where
+  describe sbj bdy = do
+    sts <- get TestStatus
+    putChar $ if sts.skipping then '*' else '#'
+    put TestStatus $ { numDescribes $= (+ 1), nestlevel $= (+ 1) } sts
+    modify TestAt (\xs => sbj :: xs)
+    bdy
+    sts' <- get TestStatus
+    put TestStatus $ { nestlevel $= (\x => x - 1) } sts'
+    modify TestAt (\(_::xs) => xs)
+  tests sbj bdy = do
+    sts <- get TestStatus
+    put TestStatus $ { numTests $= (+ 1) } sts
+    putChar $ if sts.skipping then '.' else '-'
+    if sts.skipping
+       then pure ()
+       else
+         runIOUnitTest bdy >>= maybe (pure ()) (\e => do
+           testat <- get TestAt
+           modify TestStatus (record { numFailed $= (+ 1) })
+           putStrLn $ "! " ++ concat (intersperse " : " (testat ++ [show e])) )
+  skip tst = do
+    sts <- get TestStatus
+    modify TestStatus $ record { skipping = True }
+    tst
+    modify TestStatus $ record { skipping = sts.skipping }
+
+
+
+export partial consoleRunSpecSimple : Has [Console, PrimIO] e =>
+                                      (Spec e => App e ())
+                                      -> App e ()
+consoleRunSpecSimple tst =
+  new {tag=TestStatus} (MkTestStatus 0 0 0 False 0) $
+    new {tag=TestAt} [] $ do
+      tst @{simple}
+      r <- get TestStatus
+      putStrLn $ "Done. " ++ show r.numFailed ++ " / " ++ show r.numTests
+
+
+
+-- vim: tw=80 sw=2 expandtab :
 

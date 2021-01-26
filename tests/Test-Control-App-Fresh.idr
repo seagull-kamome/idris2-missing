@@ -12,7 +12,7 @@ data FreshA : Type where
 data FreshB : Type where
 
 partial main : IO ()
-main = run $ consoleRunSpec $ do
+main = run $ consoleRunSpecSimple $ do
   describe "Fresh number" $ do
     runFresh FreshA $ do
       tests "fresh" $ do

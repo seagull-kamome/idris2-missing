@@ -39,7 +39,7 @@ testIOBitset bssize = do
              Right _ => pure ()
 
 partial main : IO ()
-main = run $ consoleRunSpec $ do
+main = run $ consoleRunSpecSimple $ do
   describe "TinyBitset" $ do
     describe "Bits8" $ testTinyBitset Bits8 7
     describe "Bits16" $ testTinyBitset Bits16 15

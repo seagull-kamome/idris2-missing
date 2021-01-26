@@ -7,7 +7,7 @@ import Test.Unit.Spec
 import Data.Integral.Gcd
 
 partial main : IO ()
-main = run $ consoleRunSpec $ do
+main = run $ consoleRunSpecSimple $ do
   describe "Data-Integral" $ do
     describe "Integral" $ do
       tests "GCD" $ do

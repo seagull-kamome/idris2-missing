@@ -85,7 +85,7 @@ testDecimalFormat = do
 
 
 partial main : IO ()
-main = run $ consoleRunSpec $ do
+main = run $ consoleRunSpecSimple $ do
   describe "Text-Format" $ do
     testDecimalFormat
 
