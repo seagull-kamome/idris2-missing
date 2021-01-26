@@ -42,6 +42,8 @@ picosecondsToDiffTime x = SecondsToDiffTime $ MkFixed x
 export %inline secondsToDiffTime : {nominal:Bool} -> Fixed 12 -> DiffTime' nominal
 secondsToDiffTime x = SecondsToDiffTime x
 
+export %inline diffTimeToPicoseconds : {nominal:Bool} -> DiffTime' nominal -> Integer
+diffTimeToPicoseconds x = let MkFixed x' = x.seconds in x'
 
 export %inline nominalDay : NominalDiffTime
 nominalDay = 86400

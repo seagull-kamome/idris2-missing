@@ -22,6 +22,8 @@ modules = Control.App.Fresh
         , Data.Time.Clock.DiffTime
         , Data.Time.Clock.UTCTime
         , Data.Time.Clock.POSIX
+        , Data.Time.Clock.AbsoluteTime
+        , Data.Time.Clock.System
         , Data.Time.Calendar
         , Data.Time.Calendar.Types
         , Data.Time.Calendar.Days
