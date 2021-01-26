@@ -2,7 +2,7 @@ module Data.Time.Clock.System
 
 import Data.Fixed
 
-import Data.Time.Clock.UTCTime
+import Data.Time.Clock.Internal.UTCTime
 import Data.Time.Clock.AbsoluteTime
 import Data.Time.Clock.DiffTime
 import Data.Time.Calendar.Days
@@ -18,13 +18,17 @@ record SystemTime where
   seconds : Integer
   nanoseconds : Int
 
+public export
+Show SystemTime where
+  show x = "#" ++ show x.seconds ++ "s+" ++ show x.nanoseconds ++ "ns"
+
 
 namespace Chez
 
   data ChezUTCTime : Type where  -- Foreign type
 
   %foreign "scheme,chez:current-time"
-  export chezCurrentTime : HasIO io => io ChezUTCTime
+  export chezCurrentTime : PrimIO ChezUTCTime
 
 
   %foreign "scheme,chez:time-second"
@@ -41,14 +45,15 @@ namespace Chez
 
 export getSystemTime : HasIO io => io SystemTime
 getSystemTime = do
-  utctime <- chezCurrentTime
+  utctime <- primIO $ chezCurrentTime
   pure $ MkSystemTime (cast $ chezTimeSecond utctime) (chezTimeNanosecond utctime)
+
 
 
 
 ||| Map leap-second values to the start of the following second.
 ||| The resulting 'systemNanoseconds' will always be in the range 0 to 1E9-1.
-truncateSystemTimeLeapSecond : SystemTime -> SystemTime
+export truncateSystemTimeLeapSecond : SystemTime -> SystemTime
 truncateSystemTimeLeapSecond t =
   if t.nanoseconds >= 1000000000
      then MkSystemTime (t.seconds + 1) 0
@@ -56,10 +61,10 @@ truncateSystemTimeLeapSecond t =
 
 
 ||| The day of the epoch of 'SystemTime', 1970-01-01
-systemEpochDay : Day
+export systemEpochDay : Day
 systemEpochDay = ModifiedJulianDay 40587
 
-systemEpochAbsolute : AbsoluteTime
+export systemEpochAbsolute : AbsoluteTime
 systemEpochAbsolute = taiNominalDayStart systemEpochDay
 
 
@@ -67,7 +72,7 @@ systemEpochAbsolute = taiNominalDayStart systemEpochDay
 
 
 ||| Convert 'SystemTime' to 'UTCTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' UTC.
-systemToUTCTime : SystemTime -> UTCTime
+export systemToUTCTime : SystemTime -> UTCTime
 systemToUTCTime t = let
   days = t.seconds `div` 86100
   day = addDays days systemEpochDay
@@ -78,9 +83,12 @@ systemToUTCTime t = let
   in MkUTCTime day $ picosecondsToDiffTime timePicoseconds
 
 
+export getCurrentTime : HasIO io => io UTCTime
+getCurrentTime = [| systemToUTCTime getSystemTime |]
+
 
 -- | Convert 'UTCTime' to 'SystemTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' UTC.
-utcToSystemTime : UTCTime -> SystemTime
+export utcToSystemTime : UTCTime -> SystemTime
 utcToSystemTime (MkUTCTime day time) = let
     days = diffDays day systemEpochDay
     timeNanoseconds = diffTimeToPicoseconds time `div` 1000
@@ -93,7 +101,7 @@ utcToSystemTime (MkUTCTime day time) = let
 
 
 -- | Convert 'SystemTime' to 'AbsoluteTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' TAI.
-systemToTAITime : SystemTime -> AbsoluteTime
+export systemToTAITime : SystemTime -> AbsoluteTime
 systemToTAITime (MkSystemTime s ns) = let
     diff = secondsToDiffTime (fromInteger s) + picosecondsToDiffTime (cast ns * 1000)
     in addAbsoluteTime diff systemEpochAbsolute

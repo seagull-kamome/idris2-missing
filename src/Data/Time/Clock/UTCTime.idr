@@ -1,26 +1,22 @@
 module Data.Time.Clock.UTCTime
 
+import public Data.Time.Clock.Internal.UTCTime
+
 import Data.Fixed
 import Data.Time.Clock.DiffTime
 import Data.Time.Calendar.Days
+import Data.Time.LocalTime.Internal.LocalTime
+import Data.Time.LocalTime.TimeZone
+import Data.Time.LocalTime.ZonedTime
+
 
 %default total
-
-public export
-record UTCTime where
-  constructor MkUTCTime
-  day : Day
-  daytime : DiffTime
-
-public export Eq UTCTime where x == y = x.day == y.day && x.daytime == y.daytime
-public export
-Ord UTCTime where
-  compare x y = let c = compare x.day y.day
-                 in case c of
-                   EQ => compare x.daytime y.daytime
-                   c' => c'
-
 -- ---------------------------------------------------------------------------
+
+-- orphan instance
+public export Show UTCTime where show t = show $ utcToZonedTime utc t
+
+
 
 export addUTCTime : NominalDiffTime -> UTCTime -> UTCTime
 addUTCTime a b =

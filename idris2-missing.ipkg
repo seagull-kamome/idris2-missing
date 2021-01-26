@@ -18,6 +18,7 @@ modules = Control.App.Fresh
         , Data.Bitset.IOBitset
         , Data.Integral.Gcd
         , Data.Rational
+        , Data.Time.Clock.Internal.UTCTime
         , Data.Time.Clock
         , Data.Time.Clock.DiffTime
         , Data.Time.Clock.UTCTime
@@ -34,9 +35,11 @@ modules = Control.App.Fresh
         , Data.Time.Calendar.Julian
         , Data.Time.Calendar.Gregorian
         , Data.Time.Calendar.WeekDate
+        , Data.Time.LocalTime.Internal.LocalTime
         , Data.Time.LocalTime.TimeZone
         , Data.Time.LocalTime.TimeOfDay
         , Data.Time.LocalTime.CalendarDiffTime
+        , Data.Time.LocalTime
         , Test.Unit.Spec
         , Text.Format.Decimal
 

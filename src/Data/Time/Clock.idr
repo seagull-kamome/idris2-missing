@@ -30,11 +30,6 @@ public export
 Ord UniversalTime where
   compare x y = compare x.modJulianDate y.modJulianDate
 
--- Show
--- FormatTime
-
 -- ---------------------------------------------------------------------------
-
-
 
 -- vim: tw=80 sw=2 expandtab :
