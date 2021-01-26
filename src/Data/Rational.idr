@@ -103,7 +103,7 @@ Fractional Rational where
 
 -- --------------------------------------------------------------------------
 
-floor : Rational -> Maybe Integer
+export floor : Rational -> Maybe Integer
 floor x = toMaybe (x.den /= 0) $ x.num `div` x.den
 
 
