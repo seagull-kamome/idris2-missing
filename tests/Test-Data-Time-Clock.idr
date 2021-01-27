@@ -22,11 +22,18 @@ testSystemTime = describe "SystemTIme" $ do
   putStrLn $ "  truncateSystemTimeLeapSecond : " ++ show (truncateSystemTimeLeapSecond t)
 
 
-
+partial
+testSystemLocalTime : Has [PrimIO, Spec, Console] e  => App e ()
+testSystemLocalTime = describe "SystemLocalTIme" $ do
+  t <- primIO $ getSystemLocalTime
+  putStrLn $ "getSystemLocalTime : " ++ show t
+ 
 
 partial main : IO ()
 main = run $ consoleRunSpecSimple $ do
-  describe "Data.Time.Clock" testSystemTime
+  describe "Data.Time.Clock" $ do
+    testSystemTime
+    testSystemLocalTime
 
 
 

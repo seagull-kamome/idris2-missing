@@ -45,7 +45,7 @@ prim__systemSeconds : Prim__SystemTime -> Int
 %foreign "scheme,chez:time-nanosecond"
 prim__systemNanoseconds : Prim__SystemTime -> Int
 
-%foreign "scheme,chez:(lambda (s ns) (make-time 'time-utc s ns))"
+%foreign "scheme,chez:(lambda (s ns) (make-time 'time-utc ns s))"
 prim__toSystemTime : Int -> Int -> Prim__SystemTime
 
 %foreign "scheme,chez:current-time"
@@ -69,7 +69,10 @@ systemNanoseconds ts with (systemTimeType)
 export toSystemTime : Integer -> Int -> SystemTime
 toSystemTime s ns with (systemTimeType)
   toSystemTime s ns | RepresentedSystemTime = MkSystemTime s ns
-  toSystemTime s ns | PrimSystemTime = MkPrimSystemTime $ prim__toSystemTime (cast s) ns
+  toSystemTime s ns | PrimSystemTime = let
+    s' = s + cast (ns `div` 1000000000)
+    ns' = ns `mod` 1000000000
+    in MkPrimSystemTime $ prim__toSystemTime (cast s') ns'
 
 export getSystemTime : HasIO io => io SystemTime
 getSystemTime with (systemTimeType)
@@ -119,7 +122,7 @@ export getCurrentTime : HasIO io => io UTCTime
 getCurrentTime = [| systemToUTCTime getSystemTime |]
 
 
--- | Convert 'UTCTime' to 'SystemTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' UTC.
+||| Convert 'UTCTime' to 'SystemTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' UTC.
 export utcToSystemTime : UTCTime -> SystemTime
 utcToSystemTime (MkUTCTime day time) = let
     days = diffDays day systemEpochDay
@@ -132,7 +135,7 @@ utcToSystemTime (MkUTCTime day time) = let
     in toSystemTime seconds $ cast nanoseconds
 
 
--- | Convert 'SystemTime' to 'AbsoluteTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' TAI.
+||| Convert 'SystemTime' to 'AbsoluteTime', matching zero 'SystemTime' to midnight of 'systemEpochDay' TAI.
 export systemToTAITime : SystemTime -> AbsoluteTime
 systemToTAITime t = let
     s = systemSeconds t
@@ -154,6 +157,8 @@ data SystemLocalTime' : SystemTimeType -> Type where
 
 export SystemLocalTime : Type
 SystemLocalTime = SystemLocalTime' PrimSystemTime
+
+
 
 -- ---------------------------------------------------------------------------
 
@@ -213,11 +218,21 @@ systemLocalTimeOfDay (MkPrimSystemLocalTime t) = let
 
 export systemLocalTimeZone : SystemLocalTime -> TimeZone
 systemLocalTimeZone (MkPrimSystemLocalTime t) = let
-  m = negate $ prim__systemLocalTimeOffset t
+  m = negate $ prim__systemLocalTimeOffset t `div` 60
   in MkTimeZone m (prim__systemLocalTimeIsSummerTime t) (prim__systemLocalTimeZoneName t)
 
 export getCurrentTimeZone : IO TimeZone
 getCurrentTimeZone = getSystemLocalTime >>= pure . systemLocalTimeZone
+
+
+public export
+Show SystemLocalTime where
+  show x = let
+    (y, m, d) = systemLocalDate x
+    td = systemLocalTimeOfDay x
+    tz = systemLocalTimeZone x
+    in show y ++ "-" ++ show m ++ "-" ++ show d ++ " "
+       ++ show td ++ " " ++ show tz
 
 
 -- vim: tw=80 sw=2 expandtab :
