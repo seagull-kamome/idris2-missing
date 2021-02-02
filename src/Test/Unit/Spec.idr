@@ -62,7 +62,7 @@ runIOUnitTest tst = handle tst (pure . const Nothing) (pure . Just)
 public export
 interface Spec e where
   %inline describe : String -> App e () -> App e ()
-  %inline tests    : String -> App (TestFailure::e) () -> App e ()
+  %inline tests  : String -> App (TestFailure::e) () -> App e ()
   %inline skip     : App e () -> App e ()
 
 

@@ -4,6 +4,7 @@ TESTS:= Test-Data-Bitset
 TESTS+= Test-Data-Integral
 TESTS+= Test-Text-Format
 TESTS+= Test-Data-Time-Clock
+TESTS+= Test-Foreign-Memory-Storable
 
 all: libs tests
 

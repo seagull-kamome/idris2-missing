@@ -43,6 +43,7 @@ modules = Control.App.Fresh
         , Test.Unit.Spec
         , Text.Format.Decimal
         , Foreign.Memory.Storable
+        , Foreign.Memory.Alloc
         , System.Logger.Simple
 
 
