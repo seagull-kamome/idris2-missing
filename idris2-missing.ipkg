@@ -44,6 +44,7 @@ modules = Control.App.Fresh
         , Text.Format.Decimal
         , Foreign.Memory.Storable
         , Foreign.Memory.Alloc
+        , Foreign.Memory.String
         , System.Logger.Simple
 
 
