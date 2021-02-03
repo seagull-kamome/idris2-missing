@@ -48,5 +48,8 @@ modules = Control.App.Fresh
         , Foreign.Memory.String
         , Foreign.Memory.Ptr
         , System.Logger.Simple
+        , System.IO.Handle.Types
+        , System.IO.Handle
+        , System.IO.Terminal
 
 
