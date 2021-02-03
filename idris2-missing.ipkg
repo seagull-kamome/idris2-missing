@@ -42,6 +42,7 @@ modules = Control.App.Fresh
         , Data.Time.LocalTime
         , Test.Unit.Spec
         , Text.Format.Decimal
+        , Text.Format.Digits
         , Foreign.Memory.Storable
         , Foreign.Memory.Alloc
         , Foreign.Memory.String
