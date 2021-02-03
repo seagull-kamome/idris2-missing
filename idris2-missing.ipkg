@@ -46,6 +46,7 @@ modules = Control.App.Fresh
         , Foreign.Memory.Storable
         , Foreign.Memory.Alloc
         , Foreign.Memory.String
+        , Foreign.Memory.Ptr
         , System.Logger.Simple
 
 
