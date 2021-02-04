@@ -14,7 +14,7 @@ import System.IO.Handle
 
 -- ---------------------------------------------------------------------------
 
--- %foreign "scheme,chez:(foreign-procedure __stdcall \"GetConsoleMode\" (void* u32*) int)"
+-- %foreign "C:GetConsoleMode,kernel32.dll"
 %foreign "scheme,chez:(foreign-procedure #f \"GetConsoleMode\" (void* u32*) int)"
 prim__win_GetConsoleMode : AnyPtr -> Buffer -> PrimIO Int
 
@@ -33,7 +33,7 @@ prim__ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
 export partial setup : HasIO io => io ()
 setup with (os)
-  setup | "windows" = do
+  setup | "windows" = do -- FIXME: compile to (case (os) [("windows") ...]
     Just b <- newBuffer 4
     let (MkWindowsHandle h) = stdout{rep=WindowsHandle}
     primIO $ prim__win_GetConsoleMode h b
@@ -43,7 +43,7 @@ setup with (os)
 
 
 export partial getScreenSize : HasIO io => io (Int, Int)
-getScreenSize with (o')
+getScreenSize with (os)
   getScreenSize | "windows" = do
     Just b <- newBuffer 32
     let (MkWindowsHandle h) = stdout{rep=WindowsHandle}

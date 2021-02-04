@@ -5,6 +5,7 @@ TESTS+= Test-Data-Integral
 TESTS+= Test-Text-Format
 TESTS+= Test-Data-Time-Clock
 TESTS+= Test-Foreign-Memory-Storable
+TESTS+= Test-System-IO-Terminal
 
 all: libs tests
 

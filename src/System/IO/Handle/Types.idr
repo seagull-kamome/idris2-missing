@@ -22,7 +22,6 @@ Handle with (os)
 
 -- ---------------------------------------------------------------------------
 
--- %foreign "scheme,chez:(foreign-procedure __stdcall \"GetStdHandle\" (unsigned-32) void*)"
 %foreign "scheme,chez:(foreign-procedure #f \"GetStdHandle\" (unsigned-32) void*)"
 prim__win_GetStdHandle : Bits32 -> AnyPtr
 
