@@ -14,13 +14,13 @@ public export data Handle = MkHandle AnyPtr
 
 -- ---------------------------------------------------------------------------
 
-export getStdin : IO Handle
+export getStdin : HasIO io => io Handle
 getStdin = pure $ MkHandle !(primIO $ prim__win_GetStdHandle $ cast (-10))
 
-export getStdout : IO Handle
+export getStdout : HasIO io => io Handle
 getStdout = pure $ MkHandle !(primIO $ prim__win_GetStdHandle $ cast (-11))
 
-export getStderr : IO Handle
+export getStderr : HasIO io => io Handle
 getStderr = pure $ MkHandle !(primIO $ prim__win_GetStdHandle $ cast (-13))
 
 
