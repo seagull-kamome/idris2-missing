@@ -21,13 +21,12 @@ hGetLine' getc buf loc = do
   where
     go : Int -> Int -> io Int
     go n loc = do
-      if n < 0
-         then pure loc
-         else do
-           Just c <- getc
-             | Nothing => pure loc
-           setByte buf loc $ cast c
-           go (assert_smaller n (n - 1)) (loc + 1)
+      if n < 0 then pure loc else do
+        Just c <- getc
+          | Nothing => pure loc
+        if c == '\n' then pure loc else do
+          setByte buf loc $ cast c
+          go (assert_smaller n (n - 1)) (loc + 1)
 
 
 export hGetLine : HasIO io

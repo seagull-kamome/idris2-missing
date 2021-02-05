@@ -9,6 +9,7 @@ sourcedir = "./src"
 depends = contrib
 
 modules = Control.App.Fresh
+        , Control.App.Terminal
         , Data.Fixed
         , Data.Hash
         , Data.Hashtable

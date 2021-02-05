@@ -2,6 +2,7 @@ module Main
 
 import Control.App
 import Control.App.Console
+import Control.App.Terminal
 
 import System.IO.Terminal as Terminal
 import Test.Unit.Spec
@@ -10,12 +11,14 @@ import Test.Unit.Spec
 
 partial main : IO ()
 main = run $ consoleRunSpecSimple $ do
-  describe "Data.Time.Clock" $ do
+  describe "System.IO.Terminal" $ do
     primIO $ do
       Terminal.setup
-      Terminal.getScreenSize >>= putStrLn . show
-
-
+      Terminal.getScreenSize >>= Terminal.putStrLn . show
+      Terminal.putStr "01234567890"
+      Terminal.putStrLn "ABCDEFGHIJKL"
+      s <- Terminal.getLine
+      Terminal.putStrLn $ "It's \"" ++ show s ++ "\""
 
 
 

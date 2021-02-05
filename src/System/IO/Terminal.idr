@@ -72,21 +72,21 @@ getScreenSize with (os)
 
 -- ---------------------------------------------------------------------------
 
-getChar : HasIO io => io (Maybe Char)
+export getChar : HasIO io => io (Maybe Char)
 getChar = U.hGetChar U.stdin
 
-putChar : HasIO io => Char -> io ()
+export putChar : HasIO io => Char -> io ()
 putChar ch = U.hPutChar U.stdout ch >> pure ()
 
-getLine : HasIO io => io (Maybe String)
+export getLine : HasIO io => io (Maybe String)
 getLine = hGetLine getChar 4096
 
-putStr : HasIO io => String -> io ()
+export putStr : HasIO io => String -> io ()
 putStr str = U.hPutStr U.stdout str >> pure ()
 
-
-putStrLn : HasIO io => String -> io ()
+export putStrLn : HasIO io => String -> io ()
 putStrLn str = U.hPutStrLn U.stdout str >> pure ()
+
 
 
 -- ---------------------------------------------------------------------------
