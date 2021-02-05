@@ -1,3 +1,8 @@
+||| Basic types of IO Handle
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module System.IO.Handle.Types
 
 

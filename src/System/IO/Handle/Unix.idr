@@ -1,3 +1,8 @@
+||| Unix file descriptor and lowlevel unbuffered IO.
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module System.IO.Handle.Unix
 
 import Data.Buffer
@@ -25,14 +30,18 @@ stderr = MkHandle 2
 -- ---------------------------------------------------------------------------
 
 %foreign "C:read,libc 6"
+         "node:lambda:(fd,b,n) => require('fs').readSync(fd, b, 0, n, null)"
 prim__unix_read_buffer : (fd:Int) -> (dst:Buffer) -> (bytes:Int) -> PrimIO Int
 
 %foreign "C:write,libc 6"
+         "node:lambda:(fd,b,n) => require('fs').writeSync(fd, b, 0, n, null)"
 prim__unix_write_buffer : Int -> Buffer -> Int -> PrimIO Int
 %foreign "C:write,libc 6"
+         "node:lambda:(fd,s,n) => require('fs').writeSync(fd, s, 0, n, null)"
 prim__unix_write_string : Int -> String -> Int -> PrimIO Int
 
 %foreign "C:ioctl,libc 6"
+         "node:lambda:(fd,k,b) => require('ioctl').ioctl(fd, k, b)"
 prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
 
@@ -40,7 +49,7 @@ prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 -- Buffer IO
 
 export hRead' : HasIO io => Handle ps -> {auto ok:elem Readable ps = True}
-             -> Buffer -> io Int
+             -> Buffer {- -> (ofs:Int) -} -> io Int
 hRead' (MkHandle fd) b = do
   n <- rawSize b
   primIO $ prim__unix_read_buffer fd b n

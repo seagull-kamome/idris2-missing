@@ -8,6 +8,8 @@ module System.IO.Terminal
 import Data.Buffer
 import System.Info
 
+import System.IO.Handle
+import System.IO.Handle.Unix as U
 import System.IO.Handle.Windows as W
 
 %default total
@@ -66,6 +68,26 @@ getScreenSize with (os)
     pure $ Just (cast c, cast r)
 
   getScreenSize | _ = pure Nothing
+
+
+-- ---------------------------------------------------------------------------
+
+getChar : HasIO io => io (Maybe Char)
+getChar = U.hGetChar U.stdin
+
+putChar : HasIO io => Char -> io ()
+putChar ch = U.hPutChar U.stdout ch >> pure ()
+
+getLine : HasIO io => io (Maybe String)
+getLine = hGetLine getChar 4096
+
+putStr : HasIO io => String -> io ()
+putStr str = U.hPutStr U.stdout str >> pure ()
+
+
+putStrLn : HasIO io => String -> io ()
+putStrLn str = U.hPutStrLn U.stdout str >> pure ()
+
 
 -- ---------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

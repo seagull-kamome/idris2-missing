@@ -49,6 +49,8 @@ modules = Control.App.Fresh
         , Foreign.Memory.Ptr
         , System.Logger.Simple
         , System.IO.Handle.Types
+        , System.IO.Handle.Windows
+        , System.IO.Handle.Unix
         , System.IO.Handle
         , System.IO.Terminal
 
