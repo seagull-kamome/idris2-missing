@@ -9,6 +9,7 @@ import Data.Buffer
 import Data.Strings
 
 import public System.IO.Handle.Types
+import System.IO.Util.GetLine
 
 %default total
 
@@ -115,7 +116,9 @@ export hPutStrLn : HasIO io => Handle ps -> {auto ok:elem Writable ps = True}
                -> String -> io Int
 hPutStrLn h str = hPutStr h $ str ++ "\n"
 
-
+export hGetLine : HasIO io => Handle ps -> {auto ok:elem Readable ps = True}
+               -> io (Maybe String)
+hGetLine h = mkGetLine (hGetChar h) 4096
 
 
 -- ---------------------------------------------------------------------------
