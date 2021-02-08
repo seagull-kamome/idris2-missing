@@ -8,9 +8,10 @@ module System.IO.Terminal
 import Data.Buffer
 import System.Info
 
-import System.IO.Handle
+--import System.IO.Handle
 import System.IO.Handle.Unix as U
 import System.IO.Handle.Windows as W
+import System.IO.Util.GetLine
 
 %default total
 
@@ -79,7 +80,7 @@ export putChar : HasIO io => Char -> io ()
 putChar ch = U.hPutChar U.stdout ch >> pure ()
 
 export getLine : HasIO io => io (Maybe String)
-getLine = hGetLine getChar 4096
+getLine = mkGetLine getChar 4096
 
 export putStr : HasIO io => String -> io ()
 putStr str = U.hPutStr U.stdout str >> pure ()
