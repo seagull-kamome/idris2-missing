@@ -1,3 +1,8 @@
+||| System clock time.
+||| 
+||| Copyright 2021, HATTORI, Hiroki
+||| This file is released under the MIT license, see LICENSE for more detail.
+||| 
 module Data.Time.Clock.System
 
 import System.Info
@@ -26,7 +31,7 @@ systemTimeType with (codegen)
   systemTimeType | "refc"        = RepresentedSystemTime
   systemTimeType | _             = RepresentedSystemTime
 
-data Prim__SystemTime : Type where
+data Prim__SystemTime : Type where  [external]
 
 public export
 data SystemTime' : SystemTimeType -> Type where
