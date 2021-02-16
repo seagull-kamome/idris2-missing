@@ -1,10 +1,13 @@
 module System.Logger.Simple
 
 import Control.App
-import System.File
+-- import System.File
 
 import Data.Fin
 import Data.Time.Clock.System
+
+import System.IO.Handle.Unix
+import System.IO.Util.GetLine
 
 %default total
 
@@ -124,18 +127,18 @@ public export
 record LogHandler where
   constructor MkLogHandler
   priority : Priority
-  prvtyp : Type
+  {prvtyp : Type}
   privdata : prvtyp
   emit : prvtyp -> LogRecord -> IO ()
-  close : prvtyp -> IO ()
+  onclose : prvtyp -> IO ()
 
 public export
 interface HasRootLogHandler m where
   getRootLogHandler : m LogHandler
 
 
-export emitLogRecord : LogHandler -> LogRecord -> IO ()
-emitLogRecord h lr = when (h.priority <= lr.priority) $ h.emit h.privdata lr
+export emitLogRecord : HasIO io => LogHandler -> LogRecord -> io ()
+emitLogRecord h lr = when (h.priority <= lr.priority) $ liftIO $ h.emit h.privdata lr
 
 
 export log : (HasIO m, Monad m, HasRootLogHandler m) => Priority -> LogSource -> String -> m ()
@@ -143,21 +146,32 @@ log prio ls msg = do
   h <- getRootLogHandler
   liftIO $ emitLogRecord h $ MkLogRecord prio ls msg
 
-
+export logClose : HasIO io => LogHandler -> io ()
+logClose h = liftIO $ h.onclose h.privdata
 
 
 -- ---------------------------------------------------------------------------
 
-consoleLogHandler : LogHandler
-consoleLogHandler = MkLogHandler
-  DEBUG () () emitter (const (pure ()))
+fdLogHandler : {ps:List Permission} -> Handle ps -> {auto ok:elem Writable ps = True}
+             -> (onclose:Handle ps -> IO ())
+             -> LogHandler
+fdLogHandler h onclose = MkLogHandler {
+    priority = DEBUG,
+    privdata = h,
+    emit = emitter,
+    onclose = onclose }
   where
-    emitter : () -> LogRecord -> IO ()
-    emitter _ x = let
+    emitter : Handle ps -> LogRecord -> IO ()
+    emitter h' x = let
       fmt = [ LFLocalTime, LFTxt " ", LFLoggerName, LFTxt " ", LFMsg ]
-      in simpleLogFormatter fmt () x >>= putStrLn
+      in liftIO (simpleLogFormatter fmt () x) >>= hPutStrLn h' >> pure ()
 
 
+stdoutLogHandler : LogHandler
+stdoutLogHandler = fdLogHandler stdout (const (pure ()))
+
+
+{-
 
 fileLogHandler : HasIO io => String -> io (Either FileError LogHandler)
 fileLogHandler filename = do
@@ -171,7 +185,7 @@ fileLogHandler filename = do
       fmt = [ LFLocalTime, LFTxt " ", LFLoggerName, LFTxt " ", LFMsg ]
       in simpleLogFormatter fmt () x >>= fPutStrLn f >> pure ()
 
-
+-}
 
 
 -- ---------------------------------------------------------------------------
@@ -185,9 +199,7 @@ Has [State LogHandler LogHandler] e => HasRootLogHandler (App e) where
 
 
 
-
 -- ---------------------------------------------------------------------------
-
 
 
 

@@ -45,6 +45,8 @@ prim__unix_write_string : Int -> String -> Int -> PrimIO Int
          "node:lambda:(fd,k,b) => require('ioctl').ioctl(fd, k, b)"
 prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
+%foreign "C:close,libc 6"
+prim_unix_close : (fd:Int) -> PrimIO Int
 
 -- ---------------------------------------------------------------------------
 -- Buffer IO
@@ -119,6 +121,16 @@ hPutStrLn h str = hPutStr h $ str ++ "\n"
 export hGetLine : HasIO io => Handle ps -> {auto ok:elem Readable ps = True}
                -> io (Maybe String)
 hGetLine h = mkGetLine (hGetChar h) 4096
+
+
+-- ---------------------------------------------------------------------------
+-- open/close
+
+
+export hClose : HasIO io => Handle ps -> io Int
+hClose (MkHandle fd) = primIO $ prim_unix_close fd
+
+
 
 
 -- ---------------------------------------------------------------------------
