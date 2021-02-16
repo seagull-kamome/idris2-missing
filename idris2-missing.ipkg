@@ -19,6 +19,7 @@ modules = Control.App.Fresh
         , Data.Bitset.IOBitset
         , Data.Integral.Gcd
         , Data.Rational
+        , Data.String.Missing
         , Data.Time.Clock.Internal.UTCTime
         , Data.Time.Clock
         , Data.Time.Clock.DiffTime
