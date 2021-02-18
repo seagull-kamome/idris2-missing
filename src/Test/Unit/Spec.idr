@@ -34,7 +34,6 @@ interface UnitTest e where
   %inline assertRight    : (Show a, Show b) => Either a b -> App e ()
   %inline assertLeft     : (Show a, Show b) => Either a b -> App e ()
 
-
 export %inline throwUnless    : Exception TestFailure e => Bool -> TestFailure -> App e ()
 throwUnless b err = if b then pure () else throw err
 
@@ -43,7 +42,7 @@ Has [Exception TestFailure] e => UnitTest e where
   assertEqual e a = throwUnless (e == a) $ Unexpected e a
   assertNotEqual e a = throwUnless (e /= a) $ Unexpected e a
   assertTrue a = throwUnless a $ Unexpected True False
-  assertFalse a = throwUnless (not a) $ Unexpected True False
+  assertFalse a = throwUnless (not a) $ Unexpected False True
   assertJust a = throwUnless (isJust a) $ UnexpectedMaybe a
   assertNothing a = throwUnless (isNothing a) $ UnexpectedMaybe a
   assertRight a = throwUnless (isRight a) $ UnexpectedEither a
