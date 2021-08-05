@@ -47,7 +47,7 @@ public export partial
          Just x' => pure $ MkHC x'
          Nothing => do
            x' <- primIO $ H.insert' k (fresh + 1) cache
-           put (Cache t) (fresh + 1, cache)
+           _ <- put (Cache t) (fresh + 1, cache)
            pure $ MkHC x'
 
 export partial

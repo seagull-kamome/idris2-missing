@@ -40,7 +40,7 @@ setup with (os)
     Just b <- newBuffer 4
       | Nothing => pure False
     W.MkHandle h <- W.getStdout
-    primIO $ prim__win_GetConsoleMode h b
+    _ <- primIO $ prim__win_GetConsoleMode h b
     getInt32 b 0 >>= setInt32 b 0 . prim__or_Int 0x0004
     pure True
 
@@ -53,7 +53,7 @@ getScreenSize with (os)
     Just b <- newBuffer 32
       | Nothing => pure Nothing
     W.MkHandle h <- W.getStdout
-    primIO $ prim__win_GetConsoleScreenBufferInfo h b
+    _ <- primIO $ prim__win_GetConsoleScreenBufferInfo h b
     left   <- getBits16 b (5 * 2)
     top    <- getBits16 b (6 * 2)
     right  <- getBits16 b (7 * 2)
@@ -63,7 +63,7 @@ getScreenSize with (os)
   getScreenSize | "unix" = do
     Just b <- newBuffer 8
       | Nothing => pure Nothing
-    primIO $ prim__ioctl_ptr 0 (0x5413 {- TIOCGWINSZ -} ) b
+    _ <- primIO $ prim__ioctl_ptr 0 (0x5413 {- TIOCGWINSZ -} ) b
     r <- getBits16 b 0
     c <- getBits16 b 2
     pure $ Just (cast c, cast r)
@@ -77,16 +77,22 @@ export getChar : HasIO io => io (Maybe Char)
 getChar = U.hGetChar U.stdin
 
 export putChar : HasIO io => Char -> io ()
-putChar ch = U.hPutChar U.stdout ch >> pure ()
+putChar ch = do
+  _ <- U.hPutChar U.stdout ch
+  pure ()
 
 export getLine : HasIO io => io (Maybe String)
 getLine = mkGetLine getChar 4096
 
 export putStr : HasIO io => String -> io ()
-putStr str = U.hPutStr U.stdout str >> pure ()
+putStr str = do
+  _ <- U.hPutStr U.stdout str
+  pure ()
 
 export putStrLn : HasIO io => String -> io ()
-putStrLn str = U.hPutStrLn U.stdout str >> pure ()
+putStrLn str = do
+  _ <- U.hPutStrLn U.stdout str
+  pure ()
 
 
 

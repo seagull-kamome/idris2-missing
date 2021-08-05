@@ -13,11 +13,18 @@ all: libs tests
 libs:
 	idris2 --build idris2-missing.ipkg
 
+install:
+	idris2 --install idris2-missing.ipkg
+
+
 tests:
 	for i in ${TESTS}; do \
 	  idris2 -p contrib -p idris2-missing.ipkg tests/$$i.idr -x main; \
 	done
 
-.PHONY: all tests
+clean:
+	rm -rf build
+
+.PHONY: all tests clean
 
 

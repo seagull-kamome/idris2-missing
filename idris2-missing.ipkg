@@ -1,7 +1,7 @@
 package idris2-missing
 
 brief = "Some missing modules of Idris2"
-version = "0.0"
+version = 0.0.0
 authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
 license = "MIT"
 
@@ -10,10 +10,10 @@ depends = contrib
 
 modules = Control.App.Fresh
         , Control.App.Terminal
+        , Control.App.Hashcons
         , Data.Fixed
         , Data.Hash
         , Data.Hashtable
-        , Control.App.Hashcons
         , Data.Bitset.Classes
         , Data.Bitset.Tiny
         , Data.Bitset.IOBitset
@@ -49,11 +49,14 @@ modules = Control.App.Fresh
         , Foreign.Memory.Alloc
         , Foreign.Memory.String
         , Foreign.Memory.Ptr
-        , System.Logger.Simple
         , System.IO.Util.GetLine
         , System.IO.Handle.Types
         , System.IO.Handle.Windows
         , System.IO.Handle.Unix
         , System.IO.Terminal
+        , System.FilePath.UNC
+        , System.FilePath.Internal
+        , System.Logger.Simple
+
 
 

@@ -164,7 +164,9 @@ fdLogHandler h onclose = MkLogHandler {
     emitter : Handle ps -> LogRecord -> IO ()
     emitter h' x = let
       fmt = [ LFLocalTime, LFTxt " ", LFLoggerName, LFTxt " ", LFMsg ]
-      in liftIO (simpleLogFormatter fmt () x) >>= hPutStrLn h' >> pure ()
+      in do
+        _ <- liftIO (simpleLogFormatter fmt () x) >>= hPutStrLn h'
+        pure ()
 
 
 stdoutLogHandler : LogHandler

@@ -78,6 +78,24 @@ strFindrV f s = go (length s) (believe_me (Refl{x=True})) where
          then let pr3 = believe_me pr1 in Just (i ** pr3)
          else go i pr4
 
+-- ---------------------------------------------------------------------------
+covering
+export isPrefixOf : (pre:String) -> (s:String) -> Bool
+isPrefixOf pre s = let
+  n = length pre
+  m = length s
+  in if n <= m
+        then let s' = substr 0 n s in s' == pre
+        else False
+
+
+export stripPrefix : (pre:String) -> (s:String) -> String
+
+
+
+export isSuffixOf : (suf:String) -> (s:String) -> Bool
+export stripSuffix : (suf:String) -> (s:String) -> String
+
 
 -- ---------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

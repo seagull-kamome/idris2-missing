@@ -5,7 +5,7 @@ import Control.App.Console
 import Test.Unit.Spec
 
 main : IO ()
-main = run $ consoleTestRunner $ do
+main = run $ consoleRunSpec $ do
   describe "test0" $ do
     describe "test0-1" $ do
       tests "aaaaa" $ do

@@ -67,7 +67,6 @@ hRead h maxbytes = do
   r <- hRead' h b
   if r <= 0
      then do
-       freeBuffer b
        pure $ Just (r, Nothing)
      else do
        pure $ Just (r, Just b)
