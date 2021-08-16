@@ -41,6 +41,7 @@ modules = Control.App.Fresh
         , Data.Time.LocalTime.TimeZone
         , Data.Time.LocalTime.TimeOfDay
         , Data.Time.LocalTime.CalendarDiffTime
+        , Data.Time.LocalTime.ZonedTime
         , Data.Time.LocalTime
         , Test.Unit.Spec
         , Text.Format.Decimal

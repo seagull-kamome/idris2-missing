@@ -19,7 +19,7 @@ install:
 
 tests:
 	for i in ${TESTS}; do \
-	  idris2 -p contrib -p idris2-missing.ipkg tests/$$i.idr -x main; \
+	  idris2 -p contrib -p idris2-missing tests/$$i.idr -x main; \
 	done
 
 clean:
