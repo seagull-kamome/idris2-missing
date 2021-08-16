@@ -86,9 +86,9 @@ public export
   cast i = let MkResV _ res _ = expToResolution n in MkFixed $ i * res
 public export
 {n:Nat} -> Cast Rational (Maybe (Fixed n)) where
-  cast x = let d = denominator x
+  cast x = let d = x.den
                MkResV _ res _ = expToResolution n
-               in toMaybe (d == 0) $ MkFixed $ numerator x * res `div` d
+            in toMaybe (d == 0) $ MkFixed $ x.num * res `div` (natToInteger d)
 public export
 {n:Nat} -> Cast (Fixed n) Rational where
   cast (MkFixed x) = let
@@ -109,4 +109,5 @@ mod' {n=n} (MkFixed x) (MkFixed q) = MkFixed $ x `mod` q
 export scale : {n:Nat} -> Integer -> Fixed n -> Fixed n
 scale {n=n} y (MkFixed x) = MkFixed $ x * y
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :
