@@ -84,6 +84,7 @@ formatFixed {n=n} fmt (MkFixed x') with (n)
 
 
 public export interface FormatDecimal t where format : DecimalFormat -> t -> String
+public export FormatDecimal Nat where format fmt = formatIntegral fmt .  natToInteger
 public export FormatDecimal Int where format = formatIntegral
 public export FormatDecimal Integer where format = formatIntegral
 public export {n:Nat} -> FormatDecimal (Fixed n) where format = formatFixed {n=n}
@@ -91,4 +92,5 @@ public export {n:Nat} -> FormatDecimal (Fixed n) where format = formatFixed {n=n
 public export format' : FormatDecimal ty => (DecimalFormat -> DecimalFormat) -> ty -> String
 format' f x = format (f defaultDecimalFormat) x
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :
