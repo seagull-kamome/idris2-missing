@@ -6,48 +6,18 @@ authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
 license = "MIT"
 
 sourcedir = "./src"
-depends = contrib
+depends = contrib, time-calendar-clock
 
 modules = Control.App.Fresh
         , Control.App.Terminal
         , Control.App.Hashcons
-        , Data.Fixed
         , Data.Hash
         , Data.Hashtable
-        , Data.Bitset.Tiny
-        , Data.Bitset.IOBitset
         , Data.Container.Interfaces
         , Data.Container.Mutable.Stack
         , Data.Container.Mutable.Queue
-        , Data.Integral.Gcd
-        , Data.Rational
         , Data.String.Missing
-        , Data.Time.Clock.Internal.UTCTime
-        , Data.Time.Clock
-        , Data.Time.Clock.DiffTime
-        , Data.Time.Clock.UTCTime
-        , Data.Time.Clock.POSIX
-        , Data.Time.Clock.AbsoluteTime
-        , Data.Time.Clock.System
-        , Data.Time.Calendar
-        , Data.Time.Calendar.Types
-        , Data.Time.Calendar.Days
-        , Data.Time.Calendar.CalendarDiffDays
-        , Data.Time.Calendar.Month
-        , Data.Time.Calendar.MonthDay
-        , Data.Time.Calendar.OrdinalDate
-        , Data.Time.Calendar.Julian
-        , Data.Time.Calendar.Gregorian
-        , Data.Time.Calendar.WeekDate
-        , Data.Time.LocalTime.Internal.LocalTime
-        , Data.Time.LocalTime.TimeZone
-        , Data.Time.LocalTime.TimeOfDay
-        , Data.Time.LocalTime.CalendarDiffTime
-        , Data.Time.LocalTime.ZonedTime
-        , Data.Time.LocalTime
         , Test.Unit.Spec
-        , Text.Format.Decimal
-        , Text.Format.Digits
         , Foreign.Memory.Storable
         , Foreign.Memory.Alloc
         , Foreign.Memory.String
