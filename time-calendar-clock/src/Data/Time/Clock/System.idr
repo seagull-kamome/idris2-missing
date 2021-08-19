@@ -21,73 +21,66 @@ import Data.Time.LocalTime.TimeZone
 
 -- ---------------------------------------------------------------------------
 
-public export data SystemTimeType = PrimSystemTime | RepresentedSystemTime
+data PrimSystemTime where [external
+data ReplSystemTime = MkSystemTime (seconds:Integer) (nanoseconds:Int)
 
-export systemTimeType : SystemTimeType
-systemTimeType with (codegen)
+%inline public export SystemTime : Type
+SystemTimee with (codegen)
   systemTimeType | "chez"        = PrimSystemTime
-  systemTimeType | "javascript"  = RepresentedSystemTime
-  systemTimeType | "node"        = RepresentedSystemTime
-  systemTimeType | "refc"        = RepresentedSystemTime
-  systemTimeType | _             = RepresentedSystemTime
+  systemTimeType | "javascript"  = ReplSystemTime
+  systemTimeType | "node"        = ReplSystemTime
+  systemTimeType | "refc"        = ReplSystemTime
+  systemTimeType | _             = ReplSystemTime
 
-data Prim__SystemTime : Type where  [external]
 
-public export
-data SystemTime' : SystemTimeType -> Type where
-  MkSystemTime : (seconds: Integer) -> (nanoseconds: Int)
-              -> SystemTime' RepresentedSystemTime
-  MkPrimSystemTime : Prim__SystemTime -> SystemTime' PrimSystemTime
-
-public export SystemTime : Type
-SystemTime = SystemTime' systemTimeType
 
 -- ---------------------------------------------------------------------------
 
 %foreign "scheme,chez:time-second"
          "javascript:lambda:(x) => (x.getTime() / 1000)"
-prim__systemSeconds : Prim__SystemTime -> Int
+         "C:idris2_crash"
+prim__systemSeconds : PrimSystemTime -> Int
 
 %foreign "scheme,chez:time-nanosecond"
          "javascript:lambda:(x) => (x.getTime() * 1000000)"
-prim__systemNanoseconds : Prim__SystemTime -> Int
+         "C:idris2_crash"
+prim__systemNanoseconds : PrimSystemTime -> Int
 
 %foreign "scheme,chez:(lambda (s ns) (make-time 'time-utc ns s))"
          "javascript:lambda:(s, ns) => new Date(s * 1000 + (ns / 1000000))"
-         "refc:"
-prim__toSystemTime : Int -> Int -> Prim__SystemTime
+         "C:idris2_crash"
+prim__toSystemTime : Int -> Int -> PrimSystemTime
 
 %foreign "scheme,chez:current-time"
          "javascript:lambda:() => new Date()"
-prim__getSystemTime : PrimIO Prim__SystemTime
-
+prim__getSystemTime : PrimIO PrimSystemTime
 
 
 -- ---------------------------------------------------------------------------
 
 export systemSeconds : SystemTime -> Integer
-systemSeconds ts with (systemTimeType)
+systemSeconds ts with (SystemTime)
+  systemSeconds x                   | PrimSystemTime = cast $ prim__systemSeconds x
   systemSeconds (MkSystemTime s ns) | RepresentedSystemTime = s
-  systemSeconds (MkPrimSystemTime x) | PrimSystemTime = cast $ prim__systemSeconds x
 
 export systemNanoseconds : SystemTime -> Int
-systemNanoseconds ts with (systemTimeType)
+systemNanoseconds ts with (SystemTimeType)
+  systemNanoseconds x                   | PrimSystemTime = prim__systemNanoseconds x
   systemNanoseconds (MkSystemTime s ns) | RepresentedSystemTime = ns
-  systemNanoseconds (MkPrimSystemTime x) | PrimSystemTime = prim__systemNanoseconds x
 
 
 export toSystemTime : Integer -> Int -> SystemTime
-toSystemTime s ns with (systemTimeType)
-  toSystemTime s ns | RepresentedSystemTime = MkSystemTime s ns
-  toSystemTime s ns | PrimSystemTime = let
-    s' = s + cast (ns `div` 1000000000)
-    ns' = ns `mod` 1000000000
-    in MkPrimSystemTime $ prim__toSystemTime (cast s') ns'
+toSystemTime s ns = go where
+   s' = s + cast (ns `div` 1000000000)
+   ns' = ns `mod` 1000000000
+   go | with (systemTimeType)
+     go | PrimSystemTime = prim__toSystemTime (cast s') ns'
+     go | ReplSystemTime = MkSystemTime s ns
 
 export getSystemTime : HasIO io => io SystemTime
 getSystemTime with (systemTimeType)
-  getSystemTime | RepresentedSystemTime = pure $ MkSystemTime 0 0 -- FIXME:
-  getSystemTime | PrimSystemTime = pure $ MkPrimSystemTime !(primIO prim__getSystemTime)
+  getSystemTime | ReplSystemTime = pure $ MkSystemTime 0 0 -- FIXME:
+  getSystemTime | PrimSystemTime = primIO prim__getSystemTime
 
 
 public export
@@ -159,7 +152,7 @@ systemToTAITime t = let
 
 -- ---------------------------------------------------------------------------
 
-data Prim__SystemLocalTime : Type where
+data Prim__SystemLocalTime : Type where [external]
 
 public export
 data SystemLocalTime' : SystemTimeType -> Type where
