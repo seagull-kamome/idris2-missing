@@ -7,7 +7,6 @@ module Data.Fixed
 
 import Data.Maybe
 import Data.Strings
-import Data.String.Extra
 
 import Data.Rational
 

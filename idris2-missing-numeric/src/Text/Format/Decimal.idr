@@ -8,7 +8,6 @@ module Text.Format.Decimal
 import Data.Maybe
 
 import Data.Strings
-import Data.String.Extra
 import Data.List
 
 import Data.Fixed

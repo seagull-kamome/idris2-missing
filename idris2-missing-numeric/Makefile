@@ -9,4 +9,5 @@ install:
 check:
 	idris2 -p idris2-missing-numeric tests/Test-Data-Integral.idr -x main
 
+.PHONY: build install check
 
