@@ -14,9 +14,11 @@ modules = Control.App.Fresh
         , Data.Fixed
         , Data.Hash
         , Data.Hashtable
-        , Data.Bitset.Classes
         , Data.Bitset.Tiny
         , Data.Bitset.IOBitset
+        , Data.Container.Interfaces
+        , Data.Container.Mutable.Stack
+        , Data.Container.Mutable.Queue
         , Data.Integral.Gcd
         , Data.Rational
         , Data.String.Missing

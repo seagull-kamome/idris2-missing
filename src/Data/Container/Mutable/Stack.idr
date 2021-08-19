@@ -34,7 +34,7 @@ prim__iostack_new : PrimIO (PrimIOStack t)
 %foreign "javascript:lambda:(x, xs) => xs.push(x)"
 prim__iostack_push : t -> PrimIOStack t -> PrimIO ()
 
-%foreign "javascript:lambda:(xs) => xs.pop()"
+%foreign "javascript:lambda:(d, f, xs) => { const x = xs.pop(); return (x === undefined)? d : f(x); }"
 prim__iostack_pop : a -> (t -> a) -> PrimIOStack t -> PrimIO a
 
 %foreign "javascript:lambda:(xs) => xs.length == 0"
