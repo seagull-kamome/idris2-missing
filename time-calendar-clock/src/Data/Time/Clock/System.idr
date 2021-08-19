@@ -26,8 +26,8 @@ public export data SystemTimeType = PrimSystemTime | RepresentedSystemTime
 export systemTimeType : SystemTimeType
 systemTimeType with (codegen)
   systemTimeType | "chez"        = PrimSystemTime
-  systemTimeType | "javascript"  = PrimSystemTime
-  systemTimeType | "node"        = PrimSystemTime
+  systemTimeType | "javascript"  = RepresentedSystemTime
+  systemTimeType | "node"        = RepresentedSystemTime
   systemTimeType | "refc"        = RepresentedSystemTime
   systemTimeType | _             = RepresentedSystemTime
 
@@ -45,15 +45,20 @@ SystemTime = SystemTime' systemTimeType
 -- ---------------------------------------------------------------------------
 
 %foreign "scheme,chez:time-second"
+         "javascript:lambda:(x) => (x.getTime() / 1000)"
 prim__systemSeconds : Prim__SystemTime -> Int
 
 %foreign "scheme,chez:time-nanosecond"
+         "javascript:lambda:(x) => (x.getTime() * 1000000)"
 prim__systemNanoseconds : Prim__SystemTime -> Int
 
 %foreign "scheme,chez:(lambda (s ns) (make-time 'time-utc ns s))"
+         "javascript:lambda:(s, ns) => new Date(s * 1000 + (ns / 1000000))"
+         "refc:"
 prim__toSystemTime : Int -> Int -> Prim__SystemTime
 
 %foreign "scheme,chez:current-time"
+         "javascript:lambda:() => new Date()"
 prim__getSystemTime : PrimIO Prim__SystemTime
 
 
@@ -168,36 +173,47 @@ SystemLocalTime = SystemLocalTime' PrimSystemTime
 -- ---------------------------------------------------------------------------
 
 %foreign "scheme,chez:current-date"
+         "javascript:lambda:() => new Date()"
 export prim__getSystemLocalTime : PrimIO Prim__SystemLocalTime
 
 %foreign "scheme,chez:date-year"
+         "javascript:lambda:(x) => x.getFullYear()"
 export prim__systemLocalTimeYear : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-month"
+         "javascript:lambda:(x) => x.getMonth()"
 export prim__systemLocalTimeMonth : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-day"
+         "javascript:lambda:(x) => x.getDate()"
 export prim__systemLocalTimeDay : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-hour"
+         "javascript:lambda:(x) => x.getHours()"
 export prim__systemLocalTimeHour : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-minute"
+         "javascript:lambda:(x) => x.getMinutes()"
 export prim__systemLocalTimeMinute : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-second"
+         "javascript:lambda:(x) => x.getSeconds()"
 export prim__systemLocalTimeSecond : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-nanosecond"
+         "javascript:lambda:(x) => (x.getMilliseconds() * 1000000)"
 export prim__systemLocalTimeNanosecond : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:date-zone-offset"
+         "javascript:lambda:(x) => x.getTimezoneOffset()"
 export prim__systemLocalTimeOffset : Prim__SystemLocalTime -> Int
 
 %foreign "scheme,chez:(lambda (x) \"\")"
+         "javascript:lambda:(x) => ''"
 export prim__systemLocalTimeZoneName : Prim__SystemLocalTime -> String
 
 %foreign "scheme,chez:(lambda (x) #f)"
+         "javascript:lambda:(x) => false"
 export prim__systemLocalTimeIsSummerTime : Prim__SystemLocalTime -> Bool
 
 -- ---------------------------------------------------------------------------
