@@ -1,0 +1,14 @@
+package idris2-missing-numeric
+
+brief   = "Some numeric data types of Idris2"
+version = 0.0.0
+authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
+license = "MIT"
+
+sourcedir = "./src"
+depends   = contrib
+
+modules = Data.Rational
+        , Data.Fixed
+        , Data.Integral.Gcd
+
