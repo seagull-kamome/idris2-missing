@@ -46,6 +46,7 @@ prim__unix_write_string : Int -> String -> Int -> PrimIO Int
 prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
 %foreign "C:close,libc 6"
+         "node:lambda:(fd) => require('fs').close(fd)"
 prim_unix_close : (fd:Int) -> PrimIO Int
 
 -- ---------------------------------------------------------------------------
