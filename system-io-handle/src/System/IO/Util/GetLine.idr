@@ -13,31 +13,35 @@ import Data.Buffer
 
 export mkGetLine' : HasIO io
                 => (getc:io (Maybe Char))
-                -> (buf:Buffer) -> (loc:Int)
-                -> io Int
+                -> (buf:Buffer) -> (loc:Nat)
+                -> io Nat
 mkGetLine' getc buf loc = do
   bs <- rawSize buf
-  go (bs - loc) loc
+  if bs <= cast (natToInteger loc)
+     then pure 0
+     else go (fromInteger $ cast $ bs - cast loc) loc
   where
-    go : Int -> Int -> io Int
-    go n loc = do
-      if n < 0 then pure loc else do
-        Just c <- getc
-          | Nothing => pure loc
-        if c == '\n' then pure loc else do
-          setByte buf loc $ cast c
-          go (assert_smaller n (n - 1)) (loc + 1)
+    go : Nat -> Nat -> io Nat
+    go Z loc = pure loc
+    go (S n) loc = do
+      Just c <- getc
+        | Nothing => pure loc
+      if c == '\n'
+         then pure loc
+         else do
+           setByte buf (cast loc) $ cast c
+           go n (S loc)
 
 
 export mkGetLine : HasIO io
                => (getc:io (Maybe Char))
-               -> (maxlen:Int)
+               -> (maxlen:Nat)
                -> io (Maybe String)
 mkGetLine getc maxlen = do
-  Just b <- newBuffer maxlen
+  Just b <- newBuffer (cast maxlen)
     | Nothing => pure Nothing
   newloc <- mkGetLine' getc b 0
-  pure $ Just !(getString b 0 newloc)
+  pure $ Just !(getString b 0 (cast newloc))
 
 
 -- ---------------------------------------------------------------------------

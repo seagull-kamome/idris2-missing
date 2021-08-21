@@ -31,22 +31,22 @@ stderr = MkHandle 2
 -- ---------------------------------------------------------------------------
 
 %foreign "C:read,libc 6"
-         "node:lambda:(fd,b,n) => require('fs').readSync(fd, b, 0, n, null)"
+         "node:lambda:(fd,b,n) => require('fs').readSync(Number(fd), b, 0, Number(n))"
 prim__unix_read_buffer : (fd:Int) -> (dst:Buffer) -> (bytes:Int) -> PrimIO Int
 
 %foreign "C:write,libc 6"
-         "node:lambda:(fd,b,n) => require('fs').writeSync(fd, b, 0, n, null)"
+         "node:lambda:(fd,b,n) => require('fs').writeSync(fd, b, {length:n})"
 prim__unix_write_buffer : Int -> Buffer -> Int -> PrimIO Int
 %foreign "C:write,libc 6"
-         "node:lambda:(fd,s,n) => require('fs').writeSync(fd, s, 0, n, null)"
+         "node:lambda:(fd,s,n) => require('fs').writeSync(Number(fd), s, {length:Number(n)})"
 prim__unix_write_string : Int -> String -> Int -> PrimIO Int
 
 %foreign "C:ioctl,libc 6"
-         "node:lambda:(fd,k,b) => require('ioctl').ioctl(fd, k, b)"
+         "node:lambda:(fd,k,b) => require('ioctl').ioctl((Number(fd), k, b)"
 prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
 %foreign "C:close,libc 6"
-         "node:lambda:(fd) => require('fs').close(fd)"
+         "node:lambda:(fd) => require('fs').close(Number(fd))"
 prim_unix_close : (fd:Int) -> PrimIO Int
 
 -- ---------------------------------------------------------------------------
@@ -60,10 +60,10 @@ hRead' (MkHandle fd) b = do
 
 
 export hRead : HasIO io => Handle ps -> {auto ok:elem Readable ps = True}
-            -> (maxbytes:Int)
+            -> (maxbytes:Nat)
             -> io (Maybe (Int, Maybe Buffer))
 hRead h maxbytes = do
-  Just b <- newBuffer maxbytes
+  Just b <- newBuffer (cast maxbytes)
     | Nothing => pure $ Nothing
   r <- hRead' h b
   if r <= 0
@@ -73,8 +73,8 @@ hRead h maxbytes = do
        pure $ Just (r, Just b)
 
 export hWrite : HasIO io => Handle ps -> {auto ok:elem Writable ps = True}
-             -> Buffer -> (bytes:Int) -> io Int
-hWrite (MkHandle fd) b bytes = primIO $ prim__unix_write_buffer fd b bytes
+             -> Buffer -> (bytes:Nat) -> io Int
+hWrite (MkHandle fd) b bytes = primIO $ prim__unix_write_buffer fd b (cast bytes)
 
 
 -- ---------------------------------------------------------------------------

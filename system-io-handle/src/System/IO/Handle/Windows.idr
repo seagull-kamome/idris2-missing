@@ -6,6 +6,7 @@ module System.IO.Handle.Windows
 -- ---------------------------------------------------------------------------
 
 %foreign "scheme,chez:(foreign-procedure #f \"GetStdHandle\" (unsigned-32) void*)"
+         "javascript:lambda:(x) => 0"
 prim__win_GetStdHandle : Bits32 -> PrimIO AnyPtr
 
 -- ---------------------------------------------------------------------------
