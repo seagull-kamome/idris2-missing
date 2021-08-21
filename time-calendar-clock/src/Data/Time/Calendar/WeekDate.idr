@@ -13,32 +13,32 @@ import Data.Time.Calendar.OrdinalDate
 -- ---------------------------------------------------------------------------
 
 public export
-data DayOfWeek = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+data DayOfWeek = Sunday | Monday | Tuesday | Wednesday | Thursday | Friday | Saturday
 
 export
 dayOfWeeks : Vect 7 DayOfWeek
-dayOfWeeks = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+dayOfWeeks = [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
 
 public export Cast (Fin 7) DayOfWeek where cast x = index x dayOfWeeks
 public export
 Num a => Cast DayOfWeek a where
-  cast Monday = 0
-  cast Tuesday = 1
-  cast Wednesday = 2
-  cast Thursday = 3
-  cast Friday = 4
-  cast Saturday = 5
-  cast Sunday = 6
+  cast Sunday = 0
+  cast Monday = 1
+  cast Tuesday = 2
+  cast Wednesday = 3
+  cast Thursday = 4
+  cast Friday = 5
+  cast Saturday = 6
 
 public export
 Cast DayOfWeek (Fin 7) where
-  cast Monday = 0
-  cast Tuesday = 1
-  cast Wednesday = 2
-  cast Thursday = 3
-  cast Friday = 4
-  cast Saturday = 5
-  cast Sunday = 6
+  cast Sunday = 0
+  cast Monday = 1
+  cast Tuesday = 2
+  cast Wednesday = 3
+  cast Thursday = 4
+  cast Friday = 5
+  cast Saturday = 6
 
 
 public export
@@ -68,12 +68,14 @@ Show DayOfWeek where
 
 -- ---------------------------------------------------------------------------
 
+export
 dayOfWeek : Day -> DayOfWeek
 dayOfWeek d = cast $ restrict 6 $ d.modifiedJulianDay + 3
 
 
 ||| @dayOfWeekDiff a b = a - b@ in range 0 to 6.
 ||| The number of days from b to the next a.
+export
 dayOfWeekDiff : DayOfWeek -> DayOfWeek -> Int
 dayOfWeekDiff a b = (the Int (cast a) - cast b) `mod` 7
 
