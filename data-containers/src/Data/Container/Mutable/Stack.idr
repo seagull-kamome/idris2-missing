@@ -5,8 +5,9 @@
 |||
 module Data.Container.Mutable.Stack
 
+import Data.Container.Mutable.Array
+
 import Data.List1
-import Data.IOArray
 import Data.IORef
 import System.Info
 
@@ -70,17 +71,19 @@ hasNativeIOStack with (codegen)
 -- --------------------------------------------------------------------------
 -- Generic IOArray based mutable stack
 
+
 export
 record IOArrayStack t where
   constructor MkIOArrayStack
   allocsize : IORef Nat
-  pages : IORef (Nat, List1 (IOArray t))
+  pages : IORef (Nat, List1 (IOArray c t))
 
 
 export newIOArrayStack : HasIO io => io (IOArrayStack t)
 newIOArrayStack = do
-  xs <- newArray 512
-  pure $ MkIOArrayStack !(newIORef 512) !(newIORef (0, (xs:::[])))
+  let s = 512
+  xs <- prim__newArray s Nothing
+  pure $ MkIOArrayStack !(newIORef s) !(newIORef (0, ((s, xs):::[])))
 
 
 export

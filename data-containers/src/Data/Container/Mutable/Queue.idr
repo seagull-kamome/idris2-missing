@@ -6,7 +6,7 @@
 module Data.Container.Mutable.Queue
 
 import Data.List
-import Data.IOArray
+import Data.IOArray.Prims
 import Data.IORef
 import System.Info
 
