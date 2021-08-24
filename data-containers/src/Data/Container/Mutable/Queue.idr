@@ -5,22 +5,16 @@
 |||
 module Data.Container.Mutable.Queue
 
+import Data.Container.Mutable.Array
+import Data.Container.Mutable.Interfaces
+
+import Data.Fin
 import Data.List
-import Data.IOArray.Prims
 import Data.IORef
 import System.Info
+import Data.So
 
 %default total
-
--- --------------------------------------------------------------------------
-
-public export
-interface MutableQueue m a where
-  0 ValTy : Type
-  null  : a -> m Bool
-  count : a -> m Nat
-  enqueue  : ValTy -> a -> m ()
-  dequeue  : a -> m (Maybe ValTy)
 
 -- --------------------------------------------------------------------------
 -- Backend specific mutable queue
@@ -50,11 +44,11 @@ newPrimIOQueue = primIO $ prim__ioqueue_new
 
 
 export
-HasIO m => MutableQueue m (PrimIOQueue t) where
+HasIO io => MutableQueue io (PrimIOQueue t) where
   ValTy     = t
   null xs   = primIO $ prim__ioqueue_null xs
   count xs  = (primIO $ prim__ioqueue_count xs) >>= pure . fromInteger . cast
-  enqueue x xs = primIO $ prim__ioqueue_enqueue x xs
+  enqueue x xs = (primIO $ prim__ioqueue_enqueue x xs) >> pure True
   dequeue xs   = primIO $ prim__ioqueue_dequeue Nothing Just xs
 
 
@@ -70,56 +64,76 @@ hasNativeIOQueue with (codegen)
 -- --------------------------------------------------------------------------
 -- Generic IOArray based mutable queue
 
+record Bin t where
+  constructor MkBin
+  content : IOArray (Maybe t)
+  link: IORef (Maybe $ Bin t)
+
+%inline InitialBinSize : Nat
+InitialBinSize = 511
+
 export
 record IOArrayQueue t where
   constructor MkIOArrayQueue
   allocsize : IORef Nat
-  pages : IORef (Nat, Nat, IOArray t, List (IOArray t), List (IOArray t))
+  content : IORef (Nat, Nat, Bin t, Nat, Bin t)
 
 
 export newIOArrayQueue : HasIO io => io (IOArrayQueue t)
 newIOArrayQueue = do
-  xs <- newArray 512
-  pure $ MkIOArrayQueue !(newIORef 512) !(newIORef (0, 0, xs, [], []))
-
+  bin <- pure $ MkBin !(newIOArray (S InitialBinSize) Nothing) !(newIORef Nothing)
+  pure $ MkIOArrayQueue !(newIORef InitialBinSize)
+                        !(newIORef (0, 0, bin, 0, bin))
 
 export
-HasIO m => MutableQueue m (IOArrayQueue t) where
+HasIO io => MutableQueue io (IOArrayQueue t) where
   ValTy     = t
-  null xs   = do
-    (n, m, ys, zs, ws) <- readIORef xs.pages
-    pure $ n == m && null zs && null ws
-  count xs  = do
-    (n, m, ys, zs, ws) <- readIORef xs.pages
-    pure $ fromInteger $ cast $ sum (map Data.IOArray.max zs) + sum (map Data.IOArray.max ws) + (cast n) - (cast m)
-  enqueue x xs = do
-    (n, m, ys, zs, ws) <- readIORef xs.pages
-    if cast n < Data.IOArray.max ys
-       then writeArray ys (cast n) x >> writeIORef xs.pages ((n + 1), m, ys, zs, ws)
-       else do
-         ac <- readIORef xs.allocsize
-         ys' <- newArray (cast ac)
-         writeArray ys' 0 x
-         writeIORef xs.pages (1, m, ys', (ys::zs), ws)
-  dequeue xs    = do 
-    (n, m, ys, zss, wss) <- readIORef xs.pages
-    case wss of
-         (ws::wss') => do
-           if (cast $ m + 1) >= Data.IOArray.max ws
-              then writeIORef xs.pages (n, 0, ys, zss, wss')
-              else writeIORef xs.pages (n, m + 1, ys, zss, wss)
-           readArray ws (cast m)
-         [] => case reverse zss of
-                    zss'@(zs::_) => do
-                      writeIORef xs.pages (n, 1, ys, [], zss')
-                      readArray zs 0
-                    [] => if n == 0
-                             then pure Nothing
-                             else do
-                               if m + 1 >= n
-                                  then writeIORef xs.pages (0, 0, ys, [], [])
-                                  else writeIORef xs.pages (n, m + 1, ys, [], [])
-                               readArray ys (cast m)
+  null q   = readIORef q.content >>= pure . (0 ==) . fst
+  count q  = readIORef q.content >>= pure . fst
+
+  enqueue x q = do
+    (c, n, b0, m, b1) <- readIORef q.content
+    case natToFin n (capacity b0.content) of
+      Just n' => do
+        writeIOArray b0.content n' (Just x)
+        writeIORef q.content (S c, S n, b0, m, b1)
+      Nothing => do
+        l <- readIORef q.allocsize
+        b2 <- pure $ MkBin !(newIOArray (S l) Nothing) !(newIORef Nothing)
+        writeIORef b0.link (Just b2)
+        let Just z = natToFin 0 (capacity b2.content)
+                      | Nothing => ?imposible
+        writeIOArray b2.content z (Just x)
+        writeIORef q.content (S c, 1, b2, m, b1)
+    pure True
+
+  dequeue q = do
+    ((S c), n, b0, m, b1) <- readIORef q.content
+      | (Z, _, _, _, _) => pure Nothing
+    if c == 0
+       then writeIORef q.content (0, 0, b0, 0, b0)
+       else if m == ubound b1.content
+               then do
+                 Just b2 <- readIORef b1.link
+                   | Nothing => writeIORef q.content (0, 0, b0, 0, b0) -- never happens
+                 writeIORef q.content (c, n, b0, 0, b2)
+               else
+                 writeIORef q.content (c, n, b0, m + 1, b1)
+    let Just m' = natToFin 0 (capacity b1.content)
+                   | Nothing => ?impossible
+    readIOArray b1.content m' -- always Just
+
+
+
+
+
+
+
+
+
+
+
+{-
 
 -- --------------------------------------------------------------------------
 
@@ -133,6 +147,6 @@ IOQueue t  with (hasNativeIOQueue)
 newIOQueue with (hasNativeIOQueue)
   newIOQueue | True  = newPrimIOQueue
   newIOQueue | False = newIOArrayQueue
-
+  -}
 -- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

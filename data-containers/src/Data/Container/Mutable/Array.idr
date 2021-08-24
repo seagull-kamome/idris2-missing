@@ -14,72 +14,79 @@ import Data.So
 
 -- --------------------------------------------------------------------------
 
-export IOArray0 : Nat -> Type -> Type
-IOArray0 c t = Prim.ArrayData (Maybe t)
+||| IOArray0 is same to Data.IOArray.Prims.ArrayData. But it's type-safe
+||| on index-access.
+export
+data IOArray0 : (capacity:Nat) -> Type -> Type where
+  MkIOArray0 : Prim.ArrayData t -> IOArray0 capacity t
 
-export newIOArray0 : HasIO io => {capacity:Nat}
-    -> {auto 0 capacity_isnt_zero: So (capacity /= Z)}
+
+export newIOArray0 : HasIO io => (capacity:Nat)
+    -> {auto 0 capacity_isnt_zero: So (capacity /= 0)}
+    -> t
     -> io (IOArray0 capacity t)
-newIOArray0 {capacity=(S c)} = primIO $ Prim.prim__newArray (cast c + 1) Nothing
+newIOArray0 c@(S _) x = 
+  pure $ MkIOArray0 !(primIO $ Prim.prim__newArray (cast c) x)
 
 
-export %inline readArray0 : HasIO io => Fin c -> IOArray0 c t -> io (Maybe t)
-readArray0 i xs = primIO $ Prim.prim__arrayGet xs (fromInteger $ cast i)
+namespace Zero
+  export %inline readIOArray : HasIO io => Fin c -> IOArray0 c t -> io t
+  readIOArray i (MkIOArray0 xs)
+    = primIO $ Prim.prim__arrayGet xs (cast $ finToNat i)
 
-
-export %inline writeArray0' : HasIO io => Fin c -> Maybe t -> IOArray0 c t -> io ()
-writeArray0' i x xs = primIO $ Prim.prim__arraySet xs (fromInteger $ cast i) x
-
-
-export %inline writeArray0 : HasIO io => Fin c -> t -> IOArray0 c t -> io ()
-writeArray0 i x xs = writeArray0' i (Just x) xs
-
-
-export %inline deleteArray0 : HasIO io => Fin c -> IOArray0 c t -> io ()
-deleteArray0 i xs = writeArray0' i Nothing xs
-
-
-
+  export %inline writeIOArray : HasIO io => Fin c -> t -> IOArray0 c t -> io ()
+  writeIOArray i x (MkIOArray0 xs)
+    = primIO $ Prim.prim__arraySet xs (cast $ finToNat i) x
 
 
 -- --------------------------------------------------------------------------
 
+||| IOArray has runtime boundary check
 export
-data IOArray : Type -> Type where
-  MkIOArray : (u:Nat) -> IOArray0 (S u) t -> IOArray t
-
-
-export %inline capacity : IOArray t -> Nat
-capacity (MkIOArray u _) = S u
-
-
-export %inline lbound : IOArray t -> Nat
-lbound _ = 0
+record IOArray t where
+  constructor MkIOArray
+  ub : Nat
+  content : IOArray0 (S ub) t
 
 export %inline ubound : IOArray t -> Nat
-ubound (MkIOArray u _) = u
+ubound xs = xs.ub
+
+export %inline capacity : IOArray t -> Nat
+capacity xs = S $ ubound xs
+
+export capacity_is_ubound_plus1 : forall xs. (S (ubound xs)) = capacity xs
+capacity_is_ubound_plus1 = Refl
 
 
-export %inline newIOArray : HasIO io
-    => (capacity:Nat) -> {0 capacity_isnt_zero: So (capacity /= Z)}
+export newIOArray : HasIO io
+    => (capacity:Nat) -> {auto capacity_isnt_zero: So (capacity /= 0)}
+    -> t
     -> io (IOArray t)
-newIOArray capacity@(S u) = pure $ MkIOArray u !(primIO $ prim__newArray (cast capacity) Nothing)
-
-export %inline readIOArray : HasIO io => (i:Fin (capacity xs)) -> (xs:IOArray t) -> io (Maybe t)
-readIOArray i (MkIOArray u xs) = primIO $ prim__arrayGet xs (fromInteger $ cast i)
+newIOArray capacity@(S u) x = pure $ MkIOArray u !(newIOArray0 capacity x)
 
 
-export %inline writeIOArray' : HasIO io => Maybe t -> (i:Fin (capacity xs)) -> (xs:IOArray t) -> io ()
-writeIOArray' x i (MkIOArray u xs) = primIO $ prim__arraySet xs (fromInteger $ cast i) x
+namespace Fin
+  export %inline readIOArray : HasIO io => (xs:IOArray t) -> Fin (capacity xs) -> io t
+  readIOArray xs i = pure $ !(readIOArray i xs.content)
+
+  export %inline writeIOArray : HasIO io => (xs:IOArray t) -> Fin (capacity xs) -> t -> io ()
+  writeIOArray xs i x = writeIOArray i x xs.content
+
+  export %inline restrict : (xs:IOArray t) -> Integer -> Fin (capacity xs)
+  restrict xs i = restrict (ubound xs) i
 
 
-export %inline writeIOArray : HasIO io => t -> (i:Fin (capacity xs)) -> (xs:IOArray t) -> io ()
-writeIOArray x i xs = writeIOArray' (Just x) i xs
 
+namespace Nat
+  export readIOArray : HasIO io => Nat -> IOArray t -> io (Maybe t)
+  readIOArray i xs with (integerToFin (cast i) (capacity xs))
+    readIOArray i xs | Just i' = pure $ Just $ !(readIOArray i' xs.content)
+    readIOArray i xs | Nothing = pure Nothing
 
-export %inline deleteIOArray : HasIO io => (i:Fin (capacity xs)) -> (xs:IOArray t) -> io ()
-deleteIOArray i xs = writeIOArray' Nothing i xs
-
+  export writeIOArray : HasIO io => Nat -> t -> IOArray t -> io Bool
+  writeIOArray i x xs with (integerToFin (cast i) (capacity xs))
+    writeIOArray i x xs | Just i' = writeIOArray i' x xs.content >> pure True
+    writeIOArray i x xs | Nothing = pure False
 
 
 -- --------------------------------------------------------------------------

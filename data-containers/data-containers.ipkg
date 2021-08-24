@@ -1,4 +1,4 @@
-package data-container
+package data-containers
 
 brief   = "Data containers of Idris2"
 version = 0.0.0
@@ -8,6 +8,8 @@ license = "MIT"
 sourcedir = "./src"
 depends   = contrib
 
-modules = Data.Container.Mutable.Stack
+modules = Data.Container.Mutable.Interfaces
+        , Data.Container.Mutable.Array
         , Data.Container.Mutable.Queue
+        , Data.Container.Mutable.RingQueue
 
