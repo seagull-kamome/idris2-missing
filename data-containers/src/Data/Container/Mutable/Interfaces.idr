@@ -10,12 +10,11 @@ module Data.Container.Mutable.Interfaces
 -- --------------------------------------------------------------------------
 
 public export
-interface MutableQueue m a where
-  0 ValTy : Type
-  null  : a -> m Bool
-  count : a -> m Nat
-  enqueue  : ValTy -> a -> m Bool
-  dequeue  : a -> m (Maybe ValTy)
+interface MutableQueue m (a:Type -> Type) where
+  null  : a t -> m Bool
+  count : a t -> m Nat
+  enqueue  : t -> a t -> m Bool
+  dequeue  : a t -> m (Maybe t)
 
 
 -- --------------------------------------------------------------------------

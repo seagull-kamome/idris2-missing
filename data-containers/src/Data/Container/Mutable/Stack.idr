@@ -7,8 +7,10 @@ module Data.Container.Mutable.Stack
 
 import Data.Container.Mutable.Array
 
+import Data.Fin
 import Data.List1
 import Data.IORef
+import Data.So
 import System.Info
 
 %default total
@@ -16,12 +18,11 @@ import System.Info
 -- --------------------------------------------------------------------------
 
 public export
-interface MutableStack m a where
-  0 ValTy : Type
-  null  : a -> m Bool
-  count : a -> m Nat
-  push  : ValTy -> a -> m ()
-  pop   : a -> m (Maybe ValTy)
+interface MutableStack m (a:Type -> Type) where
+  null  : a t -> m Bool
+  count : a t -> m Nat
+  push  : t -> a t -> m ()
+  pop   : a t -> m (Maybe t)
 
 -- --------------------------------------------------------------------------
 -- Backend specific mutable stack
@@ -51,8 +52,7 @@ newPrimIOStack = primIO $ prim__iostack_new
 
 
 export
-HasIO m => MutableStack m (PrimIOStack t) where
-  ValTy     = t
+HasIO io => MutableStack io PrimIOStack where
   null xs   = primIO $ prim__iostack_null xs
   count xs  = (primIO $ prim__iostack_count xs) >>= pure . fromInteger . cast
   push x xs = primIO $ prim__iostack_push x xs
@@ -62,10 +62,10 @@ HasIO m => MutableStack m (PrimIOStack t) where
 -- --------------------------------------------------------------------------
 
 %inline public export
-hasNativeIOStack : Bool
-hasNativeIOStack with (codegen)
-  hasNativeIOStack | "javascript" = True
-  hasNativeIOStack | _            = False
+HasNativeIOStack : Bool
+HasNativeIOStack with (codegen)
+  HasNativeIOStack | "javascript" = True
+  HasNativeIOStack | _            = False
 
 
 -- --------------------------------------------------------------------------
@@ -76,61 +76,84 @@ export
 record IOArrayStack t where
   constructor MkIOArrayStack
   allocsize : IORef Nat
-  pages : IORef (Nat, List1 (IOArray c t))
+  pages : IORef (Nat, List1 (IOArray (Maybe t)))
 
 
 export newIOArrayStack : HasIO io => io (IOArrayStack t)
 newIOArrayStack = do
-  let s = 512
-  xs <- prim__newArray s Nothing
-  pure $ MkIOArrayStack !(newIORef s) !(newIORef (0, ((s, xs):::[])))
+  let s = 511
+  xs <- newIOArray (S s) Nothing
+  pure $ MkIOArrayStack !(newIORef s) !(newIORef (0, (xs:::[])))
 
 
 export
-HasIO m => MutableStack m (IOArrayStack t) where
-  ValTy     = t
+HasIO io => MutableStack io IOArrayStack where
   null xs   = do
     (n, (y:::ys)) <- readIORef xs.pages
     pure $ n == 0 && null ys
+
   count xs  = do
     (n, (y:::ys)) <- readIORef xs.pages
-    pure $ fromInteger $ cast $ sum (map Data.IOArray.max ys) + (cast n)
+    pure $ fromInteger $ cast $ sum (map capacity ys) + (cast n)
+
   push x xs = do
     (n, ys'@(y:::ys)) <- readIORef xs.pages
-    if cast n < Data.IOArray.max y
-       then writeArray y (cast n) x >> writeIORef xs.pages (n + 1, ys')
-       else do
-         -- update acclocation unit size.
-         ac <- readIORef xs.allocsize
-         let newac = if cast (Data.IOArray.max y) < natToInteger ac then ac else (ac + ac)
-         writeIORef xs.allocsize newac
-         -- allocate new page
-         newpage <- newArray $ cast newac
-         writeArray newpage 0 x
-         writeIORef xs.pages (1, (newpage:::(y::ys)))
+    case natToFin n (S $ ubound y) of
+         Just n' => writeIOArray y n' (Just x) >> writeIORef xs.pages (S n, ys')
+         Nothing => do
+           -- update acclocation unit size.
+           ac <- readIORef xs.allocsize
+           let newac = if capacity y < S ac then ac else S (ac + ac)
+           writeIORef xs.allocsize newac
+
+           -- allocate new page
+           newpage <- newIOArray (S newac) Nothing
+           writeIOArray newpage 0 (Just x)
+           writeIORef xs.pages (1, (newpage:::(y::ys)))
+
   pop xs    = do
     (n, ys'@(y:::ys)) <- readIORef xs.pages
     case n of
-         S n' => writeIORef xs.pages (n', ys') >> readArray y (cast n')
+         S n' => do
+           writeIORef xs.pages (n', ys')
+           let n'' = restrict y (cast n')
+           r <- readIOArray y n''
+           writeIOArray y n'' Nothing
+           pure r
+
          Z => case ys of
                    [] => pure Nothing
                    (y'::ys'') => do
-                     let n' = Data.IOArray.max y' - 1
-                     writeIORef xs.pages (fromInteger (cast n'), y':::ys'')
-                     readArray y' n'
+                     writeIORef xs.pages (ubound y', y':::ys'')
+                     let l = restrict y' $ cast $ ubound y'
+                     r <- readIOArray y' l
+                     writeIOArray y' l Nothing
+                     pure r
 
 -- --------------------------------------------------------------------------
 
-%inline public export IOStack : Type -> Type
-IOStack t  with (hasNativeIOStack)
+{- WONN'T WORK!!!!
+
+public export %inline IOStack : Type -> Type
+IOStack t with (HasNativeIOStack)
   IOStack t | True  = PrimIOStack t
   IOStack t | False = IOArrayStack t
 
-
-%inline public export newIOStack : HasIO io => io (IOStack t)
-newIOStack with (hasNativeIOStack)
+public export %inline
+newIOStack : HasIO io => io (IOStack t)
+newIOStack with (HasNativeIOStack)
   newIOStack | True  = newPrimIOStack
   newIOStack | False = newIOArrayStack
+{-
+export
+IOStackMutableStack : HasIO io => MutableStack io IOStack t
+IOStackMutableStack with (hasNativeIOStack)
+  IOStackMutableStack | True  = PrimIOStackMutableStack
+  IOStackMutableStack | False = IOArrayStackMutableStack
+  -}
+-- public export
+-- HasIO io => MutableStack io IOStack t using IOStackMutableStack where
 
+-}
 -- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

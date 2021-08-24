@@ -6,7 +6,7 @@
 module Data.Container.Mutable.Queue
 
 import Data.Container.Mutable.Array
-import Data.Container.Mutable.Interfaces
+import public Data.Container.Mutable.Interfaces
 
 import Data.Fin
 import Data.List
@@ -44,8 +44,7 @@ newPrimIOQueue = primIO $ prim__ioqueue_new
 
 
 export
-HasIO io => MutableQueue io (PrimIOQueue t) where
-  ValTy     = t
+HasIO io => MutableQueue io PrimIOQueue where
   null xs   = primIO $ prim__ioqueue_null xs
   count xs  = (primIO $ prim__ioqueue_count xs) >>= pure . fromInteger . cast
   enqueue x xs = (primIO $ prim__ioqueue_enqueue x xs) >> pure True
@@ -86,14 +85,13 @@ newIOArrayQueue = do
                         !(newIORef (0, 0, bin, 0, bin))
 
 export
-HasIO io => MutableQueue io (IOArrayQueue t) where
-  ValTy     = t
+HasIO io => MutableQueue io IOArrayQueue where
   null q   = readIORef q.content >>= pure . (0 ==) . fst
   count q  = readIORef q.content >>= pure . fst
 
   enqueue x q = do
     (c, n, b0, m, b1) <- readIORef q.content
-    case natToFin n (capacity b0.content) of
+    case natToFin n (S $ ubound b0.content) of
       Just n' => do
         writeIOArray b0.content n' (Just x)
         writeIORef q.content (S c, S n, b0, m, b1)
@@ -101,9 +99,7 @@ HasIO io => MutableQueue io (IOArrayQueue t) where
         l <- readIORef q.allocsize
         b2 <- pure $ MkBin !(newIOArray (S l) Nothing) !(newIORef Nothing)
         writeIORef b0.link (Just b2)
-        let Just z = natToFin 0 (capacity b2.content)
-                      | Nothing => ?imposible
-        writeIOArray b2.content z (Just x)
+        writeIOArray b2.content 0 (Just x)
         writeIORef q.content (S c, 1, b2, m, b1)
     pure True
 
@@ -119,13 +115,15 @@ HasIO io => MutableQueue io (IOArrayQueue t) where
                  writeIORef q.content (c, n, b0, 0, b2)
                else
                  writeIORef q.content (c, n, b0, m + 1, b1)
-    let Just m' = natToFin 0 (capacity b1.content)
-                   | Nothing => ?impossible
-    readIOArray b1.content m' -- always Just
+    let m' = restrict b1.content $ cast m
+    r <- readIOArray b1.content m' -- always Just
+    writeIOArray b1.content m' Nothing
+    pure r
 
 
 -- --------------------------------------------------------------------------
 
+{-
 %inline public export IOQueue : Type -> Type
 IOQueue t  with (hasNativeIOQueue)
   IOQueue t | True  = PrimIOQueue t
@@ -136,6 +134,6 @@ IOQueue t  with (hasNativeIOQueue)
 newIOQueue with (hasNativeIOQueue)
   newIOQueue | True  = newPrimIOQueue
   newIOQueue | False = newIOArrayQueue
-
+  -}
 -- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

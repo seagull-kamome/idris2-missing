@@ -66,13 +66,13 @@ newIOArray capacity@(S u) x = pure $ MkIOArray u !(newIOArray0 capacity x)
 
 
 namespace Fin
-  export %inline readIOArray : HasIO io => (xs:IOArray t) -> Fin (capacity xs) -> io t
+  export %inline readIOArray : HasIO io => (xs:IOArray t) -> Fin (S $ ubound xs) -> io t
   readIOArray xs i = pure $ !(readIOArray i xs.content)
 
-  export %inline writeIOArray : HasIO io => (xs:IOArray t) -> Fin (capacity xs) -> t -> io ()
+  export %inline writeIOArray : HasIO io => (xs:IOArray t) -> Fin (S $ ubound xs) -> t -> io ()
   writeIOArray xs i x = writeIOArray i x xs.content
 
-  export %inline restrict : (xs:IOArray t) -> Integer -> Fin (capacity xs)
+  export %inline restrict : (xs:IOArray t) -> Integer -> Fin (S $ ubound xs)
   restrict xs i = restrict (ubound xs) i
 
 

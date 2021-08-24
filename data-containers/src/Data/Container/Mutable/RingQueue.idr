@@ -31,8 +31,7 @@ newIORingQueue cap@(S c) = pure $ MkIORingQueue !(newIOArray cap Nothing) !(newI
 
 
 export
-HasIO io => MutableQueue io (IORingQueue t) where
-    ValTy = t
+HasIO io => MutableQueue io IORingQueue where
     null q = pure $ !(count q) == 0
     count q = readIORef q.loc >>= pure . snd
 
@@ -49,7 +48,10 @@ HasIO io => MutableQueue io (IORingQueue t) where
       (n, (S m)) <- readIORef q.loc
         | (_, Z) => pure Nothing
       writeIORef q.loc ((n + 1) `mod` (capacity q.content), m)
-      readIOArray q.content (restrict q.content $ cast n)
+      let i = restrict q.content $ cast n
+      r <- readIOArray q.content i
+      writeIOArray q.content i Nothing
+      pure r
 
 
 
