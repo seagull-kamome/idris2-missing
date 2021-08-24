@@ -124,17 +124,6 @@ HasIO io => MutableQueue io (IOArrayQueue t) where
     readIOArray b1.content m' -- always Just
 
 
-
-
-
-
-
-
-
-
-
-{-
-
 -- --------------------------------------------------------------------------
 
 %inline public export IOQueue : Type -> Type
@@ -147,6 +136,6 @@ IOQueue t  with (hasNativeIOQueue)
 newIOQueue with (hasNativeIOQueue)
   newIOQueue | True  = newPrimIOQueue
   newIOQueue | False = newIOArrayQueue
-  -}
+
 -- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :
