@@ -2,6 +2,7 @@
 import Data.Container.Mutable.Array
 import Data.Container.Mutable.Stack
 import Data.Container.Mutable.Queue
+import Data.Container.Mutable.RingQueue
 
 import Data.So
 import Data.Fin
@@ -65,5 +66,21 @@ main = do
     (for [0..1000] $ \_ => dequeue q) >>= chk0 . ((map Just [5000..6000]) ==)
     putStrLn ""
 
+  do
+    putStr "RingQUeue:"
+    q <- newIORingQueue 100
+    --
+    chk0 !(null q)
+    --
+    _ <- enqueue 0 q; _ <- enqueue 1 q
+    chk0 $ not !(null q)
+    dequeue q >>= chk0 . (Just 0 ==)
+    dequeue q >>= chk0 . (Just 1 ==)
+    chk0 !(null q)
+    --
+    for_ [0..99] $ \i => enqueue i q
+    enqueue 100 q >>= chk0 . (False ==)
+    (for [0..99] $ \_ => dequeue q) >>= chk0 . ((map Just [0..99]) ==)
+    putStrLn ""
 
 

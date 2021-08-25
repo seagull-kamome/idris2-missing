@@ -13,4 +13,6 @@ modules = Data.Container.Mutable.Interfaces
         , Data.Container.Mutable.Queue
         , Data.Container.Mutable.RingQueue
         , Data.Container.Mutable.Stack
+        , Data.Container.Mutable.Hashtable
+        , Data.Hash
 
