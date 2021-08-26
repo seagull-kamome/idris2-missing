@@ -124,6 +124,7 @@ main = do
     _ <- delete "abc" ht
     length ht >>= chk0 . (2 ==)
     lookup "abc" ht >>= chk0 . (Nothing ==)
+    putStrLn ""
 
 
 

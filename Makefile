@@ -1,23 +1,21 @@
 
 TESTS:= Test-Data-Bitset
-# TESTS+= Test-Control-App-Fresh
-TESTS+= Test-Data-Integral
-TESTS+= Test-Text-Format
-TESTS+= Test-Data-Time-Clock
 TESTS+= Test-Foreign-Memory-Storable
 # TESTS+= Test-System-IO-Terminal
 TESTS+=Test-Data-String-Missing
 
-all: libs tests
-
-libs:
+build: depends
 	idris2 --build idris2-missing.ipkg
+
+depends:
+	make -C idris2-missing-numeric
+	make -C time-calendar-clock
 
 install:
 	idris2 --install idris2-missing.ipkg
 
 
-tests:
+check:
 	for i in ${TESTS}; do \
 	  idris2 -p contrib -p idris2-missing tests/$$i.idr -x main; \
 	done
@@ -25,6 +23,6 @@ tests:
 clean:
 	rm -rf build
 
-.PHONY: all tests clean
+.PHONY: all build depends install check clean
 
 

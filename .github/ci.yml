@@ -1,0 +1,35 @@
+name: Ubuntu
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
+  pull_request:
+    branches:
+      - $default-branch
+
+env:
+  SCHEME: scheme
+  IDRIS2_TESTS_CG: chez
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: snazzybucket/idris2:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Building idris2-missing-numeric
+        run: |
+          make -C idris2-missing-numeric clean deepclean build install check
+        shell: bash
+      - name: Building system-io-handle
+        run: |
+          make -C system-io-handle clean deepclean build install check
+        shell: bash
+      - name: Building time-calendar-clock
+        run: |
+          make -C time-calendar-clock clean deepclean build install check
+        shell: bash
+

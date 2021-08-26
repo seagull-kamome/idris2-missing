@@ -15,4 +15,3 @@ main = do
   Terminal.putStrLn $ "It's \"" ++ show s ++ "\""
 
 
-
