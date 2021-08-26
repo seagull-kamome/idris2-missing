@@ -21,7 +21,7 @@ check:
 	idris2 -p ${PKG} tests/test000.idr --cg node -x main
 	idris2 -p ${PKG} tests/test000.idr --cg javascript -o test-javascript.js
 	idris2 -p ${PKG} tests/test000.idr --cg refc -o test-refc
-	# build/exec/test-refc # wont work
+	build/exec/test-refc
 
 .PHONY: clean deepclean build install check
 
