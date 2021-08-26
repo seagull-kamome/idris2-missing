@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Idris version
+        run: |
+          idris2 --version
+        shell: bash
       - name: Building idris2-missing-numeric
         run: |
           make -C idris2-missing-numeric clean deepclean build install check
@@ -31,5 +35,9 @@ jobs:
       - name: Building time-calendar-clock
         run: |
           make -C time-calendar-clock clean deepclean build install check
+        shell: bash
+      - name: Building data-containers
+        run: |
+          make -C data-contaienrs clean deepclean build install check
         shell: bash
 
