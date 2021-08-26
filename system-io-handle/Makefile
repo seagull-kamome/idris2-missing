@@ -19,9 +19,12 @@ deepclean:
 check:
 	echo "ABCDE" | idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main
 	echo "ABCDE" | idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg node -x main
-	idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg javascript -o test-javascript.js
-	idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg refc -o test-refc
-	echo "ABDE" | build/exec/test-refc
+	# Javascript backend wont support prim__os
+	# idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg javascript -o test-javascript.js
+	#
+	# refC backend wont support Data.Buffer.prim_getInt32
+	# idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg refc -o test-refc
+	# echo "ABDE" | build/exec/test-refc
 
 .PHONY: clean deepclean build install check check-local
 
