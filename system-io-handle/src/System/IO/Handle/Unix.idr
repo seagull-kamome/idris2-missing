@@ -6,7 +6,7 @@
 module System.IO.Handle.Unix
 
 import Data.Buffer
-import Data.Strings
+import Data.String
 
 import public System.IO.Handle.Types
 import System.IO.Util.GetLine
