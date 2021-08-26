@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      IDRIS2_CC=gcc
+      IDRIS2_CC: gcc
     container: snazzybucket/idris2:latest
     steps:
       - name: Checkout
