@@ -6,6 +6,7 @@
 module Data.Container.Mutable.Hashtable
 
 import Data.Container.Mutable.Array
+import public Data.Container.Mutable.Interfaces
 import Data.Hash
 
 import Data.Maybe
@@ -19,63 +20,105 @@ import Data.IORef
 
 -- --------------------------------------------------------------------------
 
-export
-record IOHashtable k v where
-  constructor MkIOHashtable
-  count : IORef Nat
-  content : IOArray (List (k, IORef v))
+export data IOHashtable k v
+  = MkIOHashtable (IORef Nat) (IOArray (List (k, IORef v)))
 
+-- --------------------------------------------------------------------------
 
-export newHashtable : HasIO io
+export newIOHashtable : HasIO io
     => (capacity:Nat)
     -> {auto 0 capacity_isnt_zero: So (capacity /= 0)}
     -> io (IOHashtable k v)
-newHashtable capacity@(S _)
+newIOHashtable capacity@(S _)
   = pure $ MkIOHashtable !(newIORef 0) !(newIOArray capacity [])
 
+-- --------------------------------------------------------------------------
+
+export null : (HasIO io, Eq k, Hashable k) => IOHashtable k v -> io Bool
+null (MkIOHashtable c _) = pure $ !(readIORef c) == 0
 
 
-export null : HasIO io => IOHashtable k v -> io Bool
-null tbl = pure $ !(readIORef tbl.count) == 0
-
-export count : HasIO io => IOHashtable k v -> io Nat
-count tbl = readIORef tbl.count
+export length : (HasIO io, Eq k, Hashable k) => IOHashtable k v -> io Nat
+length (MkIOHashtable c _) = readIORef c
 
 
+export contains : (HasIO io, Eq k, Hashable k) => k -> IOHashtable k v -> io Bool
+contains k (MkIOHashtable _ arr) = do
+  let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+  xs <- readIOArray arr ix
+  pure $ maybe False (const True) $ lookup k xs
 
 
-export insert : (Hashable k, Eq k, HasIO io) => k -> v -> IOHashtable k v -> io ()
-insert k v tbl = do
-  let ix = restrict (ubound tbl.content) (cast $ saltedHash 0xdeadbeef k)
-  xs <- readIOArray tbl.content ix
+export insert : (HasIO io, Eq k, Hashable k) => k -> v -> IOHashtable k v -> io Bool
+insert k v (MkIOHashtable c arr) = do
+  let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+  xs <- readIOArray arr ix
   case lookup k xs of
        Just refv => writeIORef refv v
        Nothing => do
          kv <- pure $ (k, !(newIORef v))
-         writeIOArray tbl.content ix (kv::xs)
-         modifyIORef tbl.count S
+         writeIOArray arr ix (kv::xs)
+         modifyIORef c S
+  pure True
 
 
-export delete : (Hashable k, Eq k, HasIO io) => k -> IOHashtable k v -> io ()
-delete k tbl = do
-  let ix = restrict (ubound tbl.content) (cast $ saltedHash 0xdeadbeef k)
-  readIOArray tbl.content ix
-    >>= writeIOArray tbl.content ix . filter (\(xx, _) => k /= xx)
-
-
-export contains : (Hashable k, Eq k, HasIO io) => k -> IOHashtable k v -> io Bool
-contains k tbl = do
-  let ix = restrict (ubound tbl.content) (cast $ saltedHash 0xdeadbeef k)
-  xs <- readIOArray tbl.content ix
-  pure $ maybe False (const True) $ lookup k xs
-
-
-export lookup : (Hashable k, Eq k, HasIO io) => k -> IOHashtable k v -> io (Maybe v)
-lookup k tbl = do
-  let ix = restrict (ubound tbl.content) (cast $ saltedHash 0xdeadbeef k)
-  xs <- readIOArray tbl.content ix
+export lookup : (HasIO io, Eq k, Hashable k) => k -> IOHashtable k v -> io (Maybe v)
+lookup k (MkIOHashtable _ arr) = do
+  let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+  xs <- readIOArray arr ix
   maybe (pure Nothing) (\v' => pure $ Just !(readIORef v')) $ lookup k xs
 
+
+export delete : (HasIO io, Eq k, Hashable k) => k -> IOHashtable k v -> io Bool
+delete k (MkIOHashtable c arr) = do
+  let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+  xs <- readIOArray arr ix
+  let xs' = filter ((k /=) . fst) xs
+      d = cast (length xs) - cast (length xs')
+  writeIOArray arr ix xs'
+  modifyIORef c (\c' => fromInteger $ cast c' - d)
+  pure $ d /= 0
+
+
+
+{-
+export
+(HasIO io, Eq k, Hashable k) => MutableMap io (IOHashtable k) where
+
+  null (MkIOHashtable c _) = pure $ !(readIORef c) == 0
+  length (MkIOHashtable c _) = readIORef c
+
+  contains k (MkIOHashtable _ arr) = do
+    let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+    xs <- readIOArray arr ix
+    pure $ maybe False (const True) $ lookup k xs
+
+  insert k v (MkIOHashtable c arr) = do
+    let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+    xs <- readIOArray arr ix
+    case lookup k xs of
+         Just refv => writeIORef refv v >> pure True
+         Nothing => do
+           kv <- pure $ (k, !(newIORef v))
+           writeIOArray arr ix (kv::xs)
+           modifyIORef c S
+           pure True
+
+  lookup k (MkIOHashtable _ arr) = do
+    let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+    xs <- readIOArray arr ix
+    maybe (pure Nothing) (\v' => pure $ Just !(readIORef v')) $ lookup k xs
+
+  delete k (MkIOHashtable c arr) = do
+    let ix = restrict (ubound arr) (cast $ saltedHash 0xdeadbeef k)
+    xs <- readIOArray arr ix
+    let xs' = filter ((k /=) . fst) xs
+        d = cast (length xs) - cast (length xs')
+    writeIOArray arr ix xs'
+    modifyIORef c (+ fromInteger d)
+    pure $ d /= 0
+
+-}
 
 -- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :
