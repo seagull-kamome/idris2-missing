@@ -19,8 +19,9 @@ deepclean:
 
 check:
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg chez -x main
+	# idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg gambit -x main
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg node -x main
-	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg javascript -o test-javascript.js
+	# idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg javascript -o test-javascript.js
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg refc -o test-refc
 	build/exec/test-refc
 

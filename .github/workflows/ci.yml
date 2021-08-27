@@ -38,16 +38,19 @@ jobs:
         run: |
           make -C idris2-missing-numeric clean deepclean build install check
         shell: bash
-      - name: Building system-io-handle
+      - name: Building data-containers
+        if: ${{ always() }}
         run: |
-          make -C system-io-handle clean deepclean build install check
+          make -C data-contaienrs clean deepclean build install check
         shell: bash
       - name: Building time-calendar-clock
+        if: ${{ always() }}
         run: |
           make -C time-calendar-clock clean deepclean build install check
         shell: bash
-      - name: Building data-containers
+      - name: Building system-io-handle
+        if: ${{ always() }}
         run: |
-          make -C data-contaienrs clean deepclean build install check
+          make -C system-io-handle clean deepclean build install check
         shell: bash
 
