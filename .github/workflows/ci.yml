@@ -41,7 +41,7 @@ jobs:
       - name: Building data-containers
         if: ${{ always() }}
         run: |
-          make -C data-contaienrs clean deepclean build install check
+          make -C data-containers clean deepclean build install check
         shell: bash
       - name: Building time-calendar-clock
         if: ${{ always() }}
