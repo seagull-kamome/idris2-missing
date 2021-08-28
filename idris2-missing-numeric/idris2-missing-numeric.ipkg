@@ -11,6 +11,7 @@ depends   = contrib
 modules = Data.Rational
         , Data.Fixed
         , Data.Integral.Gcd
+        , Data.Complex
         , Text.Format.Decimal
         , Text.Format.Digits
 
