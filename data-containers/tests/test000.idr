@@ -5,8 +5,10 @@ import Data.Container.Mutable.Queue
 import Data.Container.Mutable.RingQueue
 import Data.Container.Mutable.Hashtable
 import Data.Container.Mutable.Interfaces
+import Data.Container.Immutable.Queue
 import Data.Hash
 
+import Data.List
 import Data.So
 import Data.Fin
 
@@ -124,6 +126,26 @@ main = do
     _ <- delete "abc" ht
     length ht >>= chk0 . (2 ==)
     lookup "abc" ht >>= chk0 . (Nothing ==)
+    putStrLn ""
+
+  do
+    putStr "Queue:"
+    --
+    let q = the (Queue Int) newQueue
+    chk0 $ null q
+    chk0 $ length q == 0
+    --
+    let xs = [1..100]
+    let q0 = foldl (\acc, x => push x acc) q xs
+    let (q1, xs') = foldl (\(q, ys), _ =>
+                    let (y, q') = pull q
+                     in (q', y::ys) ) (q0, []) xs
+    chk0 $ not $ null q0
+    chk0 $ length q0 == 100
+    chk0 $ null q1
+    chk0 $ length q1 == 0
+    chk0 $ xs == reverse (catMaybes xs')
+    --
     putStrLn ""
 
 

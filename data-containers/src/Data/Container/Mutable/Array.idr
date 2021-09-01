@@ -10,7 +10,6 @@ import Data.IOArray.Prims as Prim
 
 import Decidable.Equality
 import Data.Fin
-import Data.IMaybe
 import Data.So
 
 %default total
@@ -34,6 +33,7 @@ newIOArray0 c@(S _) x =
 
 
 namespace Zero
+
   export %inline readIOArray : HasIO io => Fin c -> IOArray0 c t -> io t
   readIOArray i (MkIOArray0 xs)
     = primIO $ Prim.prim__arrayGet xs (cast $ finToNat i)
