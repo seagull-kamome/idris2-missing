@@ -1,12 +1,13 @@
 package system-io-handle
 
 brief   = "Handle based IO routines of Idris2"
-version = 0.0.0
+version = 0.0.1
 authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
 license = "MIT"
 
 sourcedir = "./src"
-depends   = contrib
+depends   = base >= 0.4.0
+          , contrib >= 0.4.0
 
 modules = System.IO.Handle
         , System.IO.Handle.Types
