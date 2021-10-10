@@ -7,7 +7,10 @@ import Data.Time.Clock.Internal.UTCTime
 import Data.Time.LocalTime.TimeZone
 import Data.Time.LocalTime.TimeOfDay
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- --------------------------------------------------------------------------
 
@@ -20,17 +23,7 @@ record LocalTime where
   constructor MkLocalTime
   localDay : Day
   localTimeOfDay : TimeOfDay
-
-public export
-Eq LocalTime where
-  x == y = x.localDay == y.localDay && x.localTimeOfDay == y.localTimeOfDay
-
-public export
-Ord LocalTime where
-  compare x y =
-    case compare x.localDay y.localDay of
-         EQ => compare x.localTimeOfDay y.localTimeOfDay
-         x  => x
+%runElab derive "LocalTime" [Generic, Eq, Ord, DecEq]
 
 public export
 Show LocalTime where
@@ -52,4 +45,5 @@ localTimeToUTC tz (MkLocalTime day tod) = let
 
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

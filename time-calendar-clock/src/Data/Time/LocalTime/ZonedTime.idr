@@ -5,7 +5,10 @@ import Data.Time.LocalTime.Internal.LocalTime
 import Data.Time.Clock.Internal.UTCTime
 -- import Data.Time.Clock.System
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -19,6 +22,7 @@ record ZonedTime where
   constructor MkZonedTime
   localtime : LocalTime
   timezone : TimeZone
+%runElab derive "ZonedTime" [Generic, Eq, Ord, DecEq]
 
 public export
 Show ZonedTime where
@@ -48,4 +52,5 @@ utcToLocalZonedTime t = do
     -}
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

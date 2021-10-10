@@ -191,4 +191,6 @@ showWeekDate date = (show4 y) ++ "-W" ++ (show2 w) ++ "-" ++ (show d)
   where (y, w, d) = toWeekDate date
 -}
 
+
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

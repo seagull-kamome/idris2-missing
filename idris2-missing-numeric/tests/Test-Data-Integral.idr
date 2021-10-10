@@ -2,6 +2,7 @@ module Main
 
 import Data.Fixed
 import Data.Integral.Gcd
+import Data.Complex
 import Text.Format.Decimal
 
 chk : (Show a, Show b) => String -> List (a, b) -> (b -> a) -> (b -> a -> a -> Bool) -> IO ()
@@ -17,7 +18,7 @@ chk dsc xs f g = do
 
 
 partial main : IO ()
-main = testGcd >> testLcm >> testTextFormat
+main = testGcd >> testLcm >> testTextFormat >> testComplex
   where
     testGcd : IO ()
     testGcd = chk "Gcd golden"
@@ -90,5 +91,13 @@ main = testGcd >> testLcm >> testTextFormat
              ("   1.000000000000", 1), (" -10.000000000000", -10) ]
             (format fmt00) (const (==))
 
+    testComplex : IO ()
+    testComplex = do
+      chk "Complex Eq"
+          [ (True, (MkComplex 0 1, MkComplex 0 1))
+          , (False, (MkComplex 1 1, MkComplex 0 1)) ]
+        (uncurry (==)) (const (==))
+
+      
 
 

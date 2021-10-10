@@ -6,6 +6,7 @@ import public Data.Time.Calendar.Types
 
 %default total
 
+-- --------------------------------------------------------------------------
 
 
 export monthLengths : Bool -> Vect 12 DayOfMonth
@@ -62,4 +63,6 @@ dayOfYearToMonthAndDay isLeap yd =
                   (monthLengths isLeap)
                   (if yd < 1 then 1 else if yd > yl then yl else yd)
 
+
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

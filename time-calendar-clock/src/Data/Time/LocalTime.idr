@@ -49,4 +49,5 @@ Show UniversalTime where
     show t = show (ut1ToLocalTime 0 t)
 
 
-
+-- --------------------------------------------------------------------------
+-- vim: tw=80 sw=2 expandtab :

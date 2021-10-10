@@ -4,17 +4,15 @@ import Data.Fixed
 import Data.Time.Calendar.Days
 import Data.Time.Clock.DiffTime
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
+
+-- --------------------------------------------------------------------------
 
 export data AbsoluteTime = MkAbsoluteTime DiffTime
-
-public export
-Eq AbsoluteTime where
-  (MkAbsoluteTime x) == (MkAbsoluteTime y) = x == y
-
-public export
-Ord AbsoluteTime where
-  compare (MkAbsoluteTime x) (MkAbsoluteTime y) = compare x y
+%runElab derive "AbsoluteTime" [Generic, Eq, Ord, DecEq]
 
 
 ||| The epoch of TAI, which is 1858-11-17 00:00:00 TAI.
@@ -35,4 +33,5 @@ export diffAbsoluteTime : AbsoluteTime -> AbsoluteTime -> DiffTime
 diffAbsoluteTime (MkAbsoluteTime a) (MkAbsoluteTime b) = a - b
 
 
-
+-- --------------------------------------------------------------------------
+-- vim: tw=80 sw=2 expandtab :

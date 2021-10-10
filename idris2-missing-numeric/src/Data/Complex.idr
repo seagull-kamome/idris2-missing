@@ -5,6 +5,8 @@
 |||
 module Data.Complex
 
+import Generics.Derive
+%language ElabReflection
 
 -- --------------------------------------------------------------------------
 
@@ -23,11 +25,7 @@ export
 Functor Complex where
   map f x = MkComplex (f x.real) (f x.imag)
 
-
-export
-Eq t => Eq (Complex t) where
-  x == y = x.real == y.real && x.imag == y.imag
-
+%runElab derive "Complex" [Generic, Meta, Eq]
 
 export
 (Neg t, Num t) => Num (Complex t) where

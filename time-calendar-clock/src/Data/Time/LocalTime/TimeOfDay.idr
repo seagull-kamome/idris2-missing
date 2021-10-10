@@ -9,7 +9,10 @@ import Data.Time.Clock.DiffTime
 import Data.Time.LocalTime.TimeZone
 import Text.Format.Decimal
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -19,19 +22,7 @@ record TimeOfDay where
   hour : Int
   min : Int
   sec : Fixed 12
-
-public export
-Eq TimeOfDay where
-  x == y = x.hour == y.hour && x.min == y.min && x.sec == y.sec
-
-public export
-Ord TimeOfDay where
-  compare x y =
-    case compare x.hour y.hour of
-         EQ => case compare x.min y.min of
-                    EQ => compare x.sec y.sec
-                    z  => z
-         z => z
+%runElab derive "TimeOfDay" [Generic, Eq, Ord, DecEq]
 
 public export
 Show TimeOfDay where
@@ -119,4 +110,5 @@ timeOfDayToDayFraction tod = let
   in num %: den
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

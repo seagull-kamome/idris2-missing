@@ -8,6 +8,8 @@ license = "MIT"
 sourcedir = "./src"
 depends   = base >= 0.4.0
           , contrib >= 0.4.0
+          , elab-util >= 0.5.0
+          , sop >= 0.5.0
           , idris2-missing-numeric >= 0.0.1
 
 modules = Data.Time.Calendar

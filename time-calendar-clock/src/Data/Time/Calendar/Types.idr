@@ -2,6 +2,8 @@ module Data.Time.Calendar.Types
 
 %default total
 
+-- --------------------------------------------------------------------------
+
 public export Year : Type
 Year = Integer
 
@@ -18,4 +20,5 @@ public export WeekOfYear : Type
 WeekOfYear = Int
 
 
+-- --------------------------------------------------------------------------
 -- vim : tw=80 sw=2 expandtab :

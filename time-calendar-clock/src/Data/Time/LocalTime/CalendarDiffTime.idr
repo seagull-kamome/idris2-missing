@@ -4,17 +4,19 @@ import Data.Fixed
 import Data.Time.Clock.DiffTime
 import Data.Time.Calendar.CalendarDiffDays
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
+
+-- --------------------------------------------------------------------------
 
 public export
 record CalendarDiffTime where
   constructor MkCalendarDiffTime
   month : Integer
   time : NominalDiffTime
-
-public export
-Eq CalendarDiffTime where
-  x == y = x.month == y.month && x.time == y.time
+%runElab derive "CalendarDiffTime" [Generic, Eq, DecEq]
 
 
 public export
@@ -38,4 +40,5 @@ calendarTimeTime dt = MkCalendarDiffTime 0 dt
 export scaleCalendarDiffTime : Integer -> CalendarDiffTime -> CalendarDiffTime
 scaleCalendarDiffTime k x = MkCalendarDiffTime (k * x.month) (scale k x.time)
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

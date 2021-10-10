@@ -10,6 +10,8 @@ import Text.Format.Decimal
 
 %default total
 
+-- --------------------------------------------------------------------------
+
 ||| Convert to proleptic Gregorian calendar.
 export toGregorian : Day -> (Year, MonthOfYear, DayOfMonth)
 toGregorian date =
@@ -136,4 +138,5 @@ diffGregorianDurationRollOver day2 day1 =
    in MkCalendarDiffDays ymAllowed $ diffDays day2 dayAllowed
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

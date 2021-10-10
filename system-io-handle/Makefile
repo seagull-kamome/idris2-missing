@@ -10,11 +10,11 @@ install:
 
 clean:
 	idris2 --clean ${PKG}.ipkg
+	rm -rf build
+
+distclean:
 	find . -name *~ -delete
 	find . -name *.bak -delete
-
-deepclean:
-	rm -rf build
 
 check:
 	echo "ABCDE" | idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main

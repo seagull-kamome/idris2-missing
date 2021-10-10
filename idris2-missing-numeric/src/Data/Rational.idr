@@ -8,7 +8,10 @@ module Data.Rational
 import Data.Maybe
 import Data.Integral.Gcd
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- --------------------------------------------------------------------------
 
@@ -17,6 +20,7 @@ record Rational where
   constructor MkRational
   num : Integer
   den : Nat
+%runElab derive "Rational" [Generic, Eq, DecEq]
 
 export infinity : Rational
 infinity = MkRational 0 0
@@ -45,7 +49,6 @@ public export
 
 public export Show Rational where show x = show x.num ++ " %: " ++ show x.den
 
-public export Eq Rational where x == y = x.num == y.num && x.den == y.den
 public export
 Ord Rational where
   compare x y = let x' = x.num * natToInteger y.den

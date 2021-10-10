@@ -2,7 +2,10 @@ module Data.Time.LocalTime.TimeZone
 
 import Text.Format.Decimal
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -15,21 +18,9 @@ record TimeZone where
   ||| Is this timezone just persisting for the summer?
   summeronly : Bool
   name : String
+%runElab derive "TimeZone" [Generic, Eq, Ord, DecEq]
 
 
-
-public export
-Eq TimeZone where
-  x == y = x.minutes == y.minutes && x.summeronly == y.summeronly && x.name == y.name
-
-public export
-Ord TimeZone where
-  compare x y =
-    case compare x.minutes y.minutes of
-         EQ => case compare x.summeronly y.summeronly of
-                    EQ => compare x.name y.name 
-                    x  => x
-         x  => x
 
 public export
 record TimeZoneFormat where
@@ -102,4 +93,5 @@ getTimeZone t = do
 -}
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

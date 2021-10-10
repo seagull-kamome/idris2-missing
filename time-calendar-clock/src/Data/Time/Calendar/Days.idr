@@ -1,6 +1,9 @@
 module Data.Time.Calendar.Days
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -9,8 +12,8 @@ record Day where
   constructor ModifiedJulianDay
   modifiedJulianDay : Integer
 
-public export Eq Day where x == y = x.modifiedJulianDay == y.modifiedJulianDay
-public export Ord Day where compare x y = compare x.modifiedJulianDay y.modifiedJulianDay
+%runElab derive "Day" [Generic, Meta, Eq, Ord, DecEq]
+
 
 export addDays : Integer -> Day -> Day
 addDays n x = { modifiedJulianDay $= (+n) } x
@@ -19,3 +22,5 @@ export diffDays : Day -> Day -> Integer
 diffDays x y = x.modifiedJulianDay - y.modifiedJulianDay
 
 
+-- --------------------------------------------------------------------------
+-- vim: tw=80 sw=2 expandtab :

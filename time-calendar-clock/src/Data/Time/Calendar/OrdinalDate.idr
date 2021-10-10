@@ -7,6 +7,9 @@ import Text.Format.Decimal
 
 %default total
 
+
+-- --------------------------------------------------------------------------
+
 export isLeapYear : Year -> Bool
 isLeapYear y = (y `mod` 4 == 0) && ((y `mod` 400 == 0) || (y `mod` 100 /= 0))
 
@@ -152,4 +155,5 @@ fromSundayStartWeekValid year w d =
            else Just $ addDays zbYearDay firstDay
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

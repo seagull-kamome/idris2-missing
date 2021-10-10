@@ -5,7 +5,10 @@ import Data.Time.Calendar.Days
 import Data.Time.Calendar.Gregorian
 import Text.Format.Decimal
 
+import Generics.Derive
+
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -16,8 +19,7 @@ export data Month = MkMonth Integer
 public export Cast Month Integer where cast (MkMonth x) = x
 public export Cast Integer Month where cast = MkMonth
 
-public export Eq Month where (MkMonth x) == (MkMonth y) = x == y
-public export Ord Month where compare (MkMonth x) (MkMonth y) = compare x y
+%runElab derive "Month" [Generic, Meta, Eq, Ord]
 
 -- ---------------------------------------------------------------------------
 
@@ -35,7 +37,7 @@ toYearMonth (MkMonth x) =
 
 export fromYearMonth : Year -> MonthOfYear -> Month
 fromYearMonth y m =
- let m' = if m < 1 then 1 else if m > 12 then 12 else m
+ let m' = the Int $ if m < 1 then 1 else if m > 12 then 12 else m
   in MkMonth $ y * 12 + cast (m' - 1)
 
 export fromYearMonthValid : Year -> MonthOfYear -> Maybe Month
@@ -70,4 +72,5 @@ Show Month where
        ++ format' (record { width = Just 2, pad = Just '0' }) my
 
 
+-- --------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

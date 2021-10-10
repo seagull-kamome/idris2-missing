@@ -8,9 +8,12 @@ module Data.Fixed
 import Data.Maybe
 import Data.String
 
+import Generics.Derive
+
 import Data.Rational
 
 %default total
+%language ElabReflection
 
 -- --------------------------------------------------------------------------
 
@@ -35,8 +38,7 @@ public export
 data Fixed : Nat -> Type where
   MkFixed : Integer -> Fixed n
 
-public export Eq (Fixed n) where MkFixed x == MkFixed y = x == y
-public export Ord (Fixed n) where compare (MkFixed x) (MkFixed y) = compare x y
+%runElab derive "Fixed" [Generic, Meta, Eq, Ord, DecEq]
 
 public export
 {n:Nat} -> Num (Fixed n) where

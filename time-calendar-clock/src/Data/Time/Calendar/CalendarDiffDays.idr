@@ -1,7 +1,14 @@
+||| Date difference
+|||
+||| Copyright 2021. HIROKI, Hattori
+||| This file is released under the MIT license, see LICENSE for more detail.
+|||
 module Data.Time.Calendar.CalendarDiffDays
 
+import Generics.Derive
 
 %default total
+%language ElabReflection
 
 -- ---------------------------------------------------------------------------
 
@@ -11,9 +18,8 @@ record CalendarDiffDays where
   month : Integer
   day : Integer
 
-public export 
-Eq CalendarDiffDays where
-  x == y = x.month == y.month && x.day == y.day
+%runElab derive "CalendarDiffDays" [Generic, Meta, Eq, DecEq]
+
 
 public export
 Show CalendarDiffDays where

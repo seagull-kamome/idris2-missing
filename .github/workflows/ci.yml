@@ -31,26 +31,47 @@ jobs:
         with:
           node-version: '14.x'
       - name: Idris version
-        run: |
-          idris2 --version
+        run: idris2 --version
         shell: bash
+
+      #
+      # Install dependet modules.
+      #
+      - name: checkout idris2-elab-util
+        name: actions/checkout@v2
+        with:
+          repository: stefan-hoeck/idris2-elab-util
+          path: idris2-elab-util
+      - name: install idris2-sop
+        run: idris2 --install idris2-elab-util/elab-util.ipkg
+        shell: bash
+
+
+      - name: checkout idris2-sop
+        name: actions/checkout@v2
+        with:
+          repository: stefan-hoeck/idris2-sop
+          path: idris2-sop
+      - name: install idris2-sop
+        run: idris2 --install idris2-sop/sop.ipkg
+        shell: bash
+
+      #
+      #
+      #
       - name: Building idris2-missing-numeric
-        run: |
-          make -C idris2-missing-numeric clean deepclean build install check
+        run: make -C idris2-missing-numeric clean deepclean build install check
         shell: bash
       - name: Building data-containers
         if: ${{ always() }}
-        run: |
-          make -C data-containers clean deepclean build install check
+        run: make -C data-containers clean deepclean build install check
         shell: bash
       - name: Building time-calendar-clock
         if: ${{ always() }}
-        run: |
-          make -C time-calendar-clock clean deepclean build install check
+        run: make -C time-calendar-clock clean deepclean build install check
         shell: bash
       - name: Building system-io-handle
         if: ${{ always() }}
-        run: |
-          make -C system-io-handle clean deepclean build install check
+        run: make -C system-io-handle clean deepclean build install check
         shell: bash
 
