@@ -38,7 +38,7 @@ jobs:
       # Install dependet modules.
       #
       - name: checkout idris2-elab-util
-        name: actions/checkout@v2
+        uses: actions/checkout@v2
         with:
           repository: stefan-hoeck/idris2-elab-util
           path: idris2-elab-util
@@ -48,7 +48,7 @@ jobs:
 
 
       - name: checkout idris2-sop
-        name: actions/checkout@v2
+        uses: actions/checkout@v2
         with:
           repository: stefan-hoeck/idris2-sop
           path: idris2-sop
