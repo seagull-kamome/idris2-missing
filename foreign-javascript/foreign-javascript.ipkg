@@ -1,0 +1,13 @@
+package foreign-javascript
+
+brief   = "Foreign Interface to Javascript"
+version = 0.0.1
+authors = "HATTORI, Hiroki <seagull.kamome@gmail.com>"
+license = "MIT"
+
+sourcedir = "./src"
+depends   = base >= 0.4.0
+          , contrib >= 0.4.0
+
+modules = Foreign.Javascript.Types
+
