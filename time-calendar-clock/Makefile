@@ -1,6 +1,6 @@
 
 PKG=time-calendar-clock
-DEPS=-p idris2-missing-numeric
+DEPS=-p idris2-missing-numeric -p elab-util -p sop
 
 
 build:

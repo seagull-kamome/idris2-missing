@@ -5,14 +5,17 @@ TESTS+= Test-Foreign-Memory-Storable
 TESTS+=Test-Data-String-Missing
 
 build: depends
-	idris2 --build idris2-missing.ipkg
+	# idris2 --build idris2-missing.ipkg
 
 depends:
-	make -C idris2-missing-numeric
-	make -C time-calendar-clock
+	make -C idris2-missing-numeric install
+	make -C foreign-javascript install
+	make -C data-containers install
+	make -C time-calendar-clock install
+	make -C system-io-handle install
 
 install:
-	idris2 --install idris2-missing.ipkg
+	#idris2 --install idris2-missing.ipkg
 
 
 check:
