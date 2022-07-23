@@ -14,7 +14,7 @@ import Data.Primitives.Views
 -- --------------------------------------------------------------------------
 
 public export Digits : (base:Nat) -> Type
-Digits base = (n:Int) -> {auto ok:n >= 0 && n < (cast base) = True} -> Char
+Digits base = (n:Nat) -> {auto ok:n < (cast base) = True} -> Char
 
 
 upperHexdigit : Digits 16
@@ -71,7 +71,7 @@ intToDigits base digits n = if n < 0 then pack $ go n [] else "0"
     go m xs with (m `divides` base_i)
       go (_ * d + r) xs | DivBy d r prf =
         let prf' = believe_me prf
-            in go (assert_smaller n d) (digits {ok=prf'} r :: xs)
+            in go (assert_smaller n d) (digits {ok=prf'} (cast r) :: xs)
 
 
 

@@ -1,15 +1,14 @@
 ||| Format decimal number into string.
 ||| 
-||| Copyright 2021, HATTORI, Hiroki
+||| Copyright 2021,2022 HATTORI, Hiroki
 ||| This file is released under the MIT license, see LICENSE for more detail.
 ||| 
 module Text.Format.Decimal
 
 import Data.Maybe
-
+import Data.Nat
 import Data.String
 import Data.List
-
 import Data.Fixed
 
 %default total
@@ -32,7 +31,7 @@ defaultDecimalFormat =
   MkDecimalFormat Nothing Nothing Nothing ' ' '.' (Just $ Left "-") Nothing
 
 export zeroPad : Nat -> DecimalFormat -> DecimalFormat
-zeroPad w = record { width = Just w, pad = Just '0' }
+zeroPad w = { width := Just w, pad := Just '0' }
 
 
 
@@ -74,7 +73,7 @@ formatFixed {n=n} fmt (MkFixed x') with (n)
   formatFixed {n=n} fmt (MkFixed x') | 0 = formatIntegral fmt x'
   formatFixed {n=n} fmt (MkFixed x') | _ = let
     (x, sign) = if x' < 0 then (negate x', fmt.minus) else (x', fmt.plus)
-    MkResV _ r _ = expToResolution n
+    r = cast $ power 10 n
     dec = show $ x `div` r
     frc' = show $ x `mod` r
     frc = replicate (fromInteger $ cast $ cast n - strLength frc') '0' ++ frc'

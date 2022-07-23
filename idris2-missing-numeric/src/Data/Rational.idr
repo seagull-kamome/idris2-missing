@@ -45,6 +45,8 @@ public export
      then reduce num $ fromInteger den
      else reduce (negate num) (fromInteger $ negate den)
 
+
+
 -- --------------------------------------------------------------------------
 
 public export Show Rational where show x = show x.num ++ " %: " ++ show x.den
@@ -80,6 +82,9 @@ public export
 Fractional Rational where
   x / y = (x.num * natToInteger y.den) %: (y.num * natToInteger x.den)
   recip x = (natToInteger x.den) %: (fromInteger x.num)
+
+
+
 
 -- --------------------------------------------------------------------------
 

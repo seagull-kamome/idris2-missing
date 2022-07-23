@@ -5,48 +5,30 @@
 |||
 module Data.Fixed
 
+import Data.Nat
 import Data.Maybe
 import Data.String
-
-import Generics.Derive
-
 import Data.Rational
+import Generics.Newtype
 
 %default total
 %language ElabReflection
 
 -- --------------------------------------------------------------------------
 
-namespace ResolutionV
-
-  public export
-  data ResolutionV : Nat -> Type where
-    MkResV : (n:Nat) -> (res:Integer) -> (res > 0 = True) -> ResolutionV n
-
-  export expToResolution : (n:Nat) -> ResolutionV n
-  expToResolution n = go 1 Refl n where
-    go : (ans:Integer) -> (ans > 0 = True) -> (m:Nat) -> ResolutionV n
-    go ans prf Z = MkResV n ans prf
-    go ans prf (S m) = go (ans * 10) (believe_me $ Refl {x=True}) m
-
-
-
-
--- --------------------------------------------------------------------------
-
 public export
-data Fixed : Nat -> Type where
-  MkFixed : Integer -> Fixed n
+record Fixed (n:Nat) where
+  constructor MkFixed
+  num : Integer
+%runElab derive "Fixed" [Generic, Eq, Ord, DecEq]
 
-%runElab derive "Fixed" [Generic, Meta, Eq, Ord, DecEq]
+
 
 public export
 {n:Nat} -> Num (Fixed n) where
   (MkFixed x) + (MkFixed y) = MkFixed $ x + y
-  (MkFixed x) * (MkFixed y) = let
-    MkResV _ res _ = expToResolution n in MkFixed $ (x * y) `div` res
-  fromInteger i = let
-    MkResV _ res _ = expToResolution n in MkFixed $ i * res
+  (MkFixed x) * (MkFixed y) = MkFixed $ (x * y) `div` (cast $ power 10 n)
+  fromInteger i = MkFixed $ i * (cast $ power 10 n)
 
 public export
 {n:Nat} -> Neg (Fixed n) where
@@ -58,10 +40,9 @@ public export
 
 partial public export
 {n:Nat} -> Fractional (Fixed n) where
-  (MkFixed x) / (MkFixed y) = let
-    MkResV _ res _ = expToResolution n in MkFixed $ (x * res) `div` y
+  (MkFixed x) / (MkFixed y) = MkFixed $ (x * (cast $ power 10 n)) `div` y
   recip (MkFixed x) = let
-    MkResV _ res _ = expToResolution n in MkFixed $ (res * res) `div` x
+    res = cast $ power 10 n in MkFixed $ (res * res) `div` x
 
 
 public export
@@ -70,10 +51,12 @@ public export
                                else if x < 0 then "-" ++ go (negate x)
                                else go x where
     go : Integer -> String
-    go x = let MkResV _ r _ = expToResolution n
+    go x = let r = cast $ power 10 n
                i = x `div` r
                d' = show $ x `mod` r
             in show i ++ "." ++ replicate (fromInteger $ cast $ cast n - strLength d') '0' ++ d'
+
+
 
 -- --------------------------------------------------------------------------
 -- Type cast
@@ -81,24 +64,24 @@ public export
 
 public export
 {n:Nat} -> Cast Int (Fixed n) where
-  cast i = let MkResV _ res _ = expToResolution n in MkFixed $ (cast i) * res
+  cast i = MkFixed $ (cast i) * (cast $ power 10 n)
 public export
 {n:Nat} -> Cast Integer (Fixed n) where
-  cast i = let MkResV _ res _ = expToResolution n in MkFixed $ i * res
+  cast i = MkFixed $ i * (cast $ power 10 n)
 public export
 {n:Nat} -> Cast Rational (Maybe (Fixed n)) where
   cast x = let d = x.den
-               MkResV _ res _ = expToResolution n
-            in toMaybe (d == 0) $ MkFixed $ x.num * res `div` (natToInteger d)
+            in toMaybe (d == 0) $ MkFixed $ x.num * (cast $ power 10 n) `div` (natToInteger d)
 public export
 {n:Nat} -> Cast (Fixed n) Rational where
-  cast (MkFixed x) = let
-    MkResV _ res _ = expToResolution n in x %: res
+  cast (MkFixed x) = x %: (cast $ power 10 n)
+
+
 
 -- --------------------------------------------------------------------------
 
 public export resolution : {n:Nat} -> Fixed n -> Integer
-resolution {n=n} _ = let MkResV _ res _ = expToResolution n in res
+resolution _ = cast $ power 10 n
 
 
 export div' : {n:Nat} -> Fixed n -> Fixed n -> Integer
