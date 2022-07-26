@@ -49,7 +49,11 @@ public export
 
 -- --------------------------------------------------------------------------
 
-public export Show Rational where show x = show x.num ++ " %: " ++ show x.den
+export
+Show Rational where
+  show x with (isInfinity x)
+    _ | True = "#Infinity"
+    _ | False = show x.num ++ " %: " ++ show x.den
 
 public export
 Ord Rational where
