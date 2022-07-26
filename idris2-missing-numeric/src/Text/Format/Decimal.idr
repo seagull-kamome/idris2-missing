@@ -60,7 +60,7 @@ formatDecimal fmt sign dec frc = let
 
 
 
-public export formatIntegral : (Show ty, Neg ty, Num ty, Ord ty) => DecimalFormat -> ty -> String
+export formatIntegral : (Show ty, Neg ty, Num ty, Ord ty) => DecimalFormat -> ty -> String
 formatIntegral fmt x =
   if x < 0
      then formatDecimal fmt fmt.minus (show $ negate x) ""
@@ -68,7 +68,7 @@ formatIntegral fmt x =
 
 
 
-public export formatFixed : {n:Nat} -> DecimalFormat -> Fixed n -> String
+export formatFixed : {n:Nat} -> DecimalFormat -> Fixed n -> String
 formatFixed {n=n} fmt (MkFixed x') with (n)
   formatFixed {n=n} fmt (MkFixed x') | 0 = formatIntegral fmt x'
   formatFixed {n=n} fmt (MkFixed x') | _ = let
@@ -82,12 +82,12 @@ formatFixed {n=n} fmt (MkFixed x') with (n)
 
 
 public export interface FormatDecimal t where format : DecimalFormat -> t -> String
-public export FormatDecimal Nat where format fmt = formatIntegral fmt .  natToInteger
-public export FormatDecimal Int where format = formatIntegral
-public export FormatDecimal Integer where format = formatIntegral
-public export {n:Nat} -> FormatDecimal (Fixed n) where format = formatFixed {n=n}
+export FormatDecimal Nat where format fmt = formatIntegral fmt .  natToInteger
+export FormatDecimal Int where format = formatIntegral
+export FormatDecimal Integer where format = formatIntegral
+export {n:Nat} -> FormatDecimal (Fixed n) where format = formatFixed {n=n}
 
-public export format' : FormatDecimal ty => (DecimalFormat -> DecimalFormat) -> ty -> String
+export format' : FormatDecimal ty => (DecimalFormat -> DecimalFormat) -> ty -> String
 format' f x = format (f defaultDecimalFormat) x
 
 -- --------------------------------------------------------------------------
