@@ -1,12 +1,13 @@
 
 PKG=system-io-handle
+IDRIS2_OPTS=--no-color
 
 
 build:
-	idris2 --build ${PKG}.ipkg
+	idris2 ${IDRIS2_OPTS} --build ${PKG}.ipkg
 
 install:
-	idris2 --install ${PKG}.ipkg
+	idris2 ${IDRIS2_OPTS} --install ${PKG}.ipkg
 
 clean:
 	idris2 --clean ${PKG}.ipkg
@@ -17,8 +18,8 @@ distclean:
 	find . -name *.bak -delete
 
 check:
-	echo "ABCDE" | idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main
-	echo "ABCDE" | idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg node -x main
+	echo "ABCDE" | idris2 ${IDRIS2_OPTS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main
+	echo "ABCDE" | idris2 ${IDRIS2_OPTS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg node -x main
 	# Javascript backend wont support prim__os
 	# idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg javascript -o test-javascript.js
 	#
