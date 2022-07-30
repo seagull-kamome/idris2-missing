@@ -5,7 +5,7 @@ import Data.Time.LocalTime.Internal.LocalTime
 import Data.Time.Clock.Internal.UTCTime
 -- import Data.Time.Clock.System
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection
@@ -26,7 +26,7 @@ record ZonedTime where
 
 public export
 Show ZonedTime where
-  show x = show x.localtime ++ " " ++ show x.timezone
+  show x = "\{show x.localtime}  \{show x.timezone}"
 
 
 -- ---------------------------------------------------------------------------

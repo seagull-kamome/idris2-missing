@@ -38,10 +38,10 @@ timeZoneOffsetString' fmt tz = let
   h = tz.minutes `div` 60
   m = tz.minutes `mod` 60
   in case fmt.sep of
-          Nothing => format' (record { width = fmt.width, pad = fmt.pad }) $ h * 100 + m
-          Just c  => format' (record { width = map (\w => max 0 (w `minus` 3)) fmt.width,
-                                       pad = fmt.pad }) h
-                     ++ format' (record { width = Just 2, pad = Just '0' }) m
+          Nothing => format' {width:=fmt.width, pad:=fmt.pad } $ h * 100 + m
+          Just c  => format' {width:=map (\w => max 0 (w `minus` 3)) fmt.width,
+                              pad:=fmt.pad} h
+                     ++ format' {width:=Just 2, pad:=Just '0'} m
 
 export timeZoneOffsetString : TimeZone -> String
 timeZoneOffsetString x = timeZoneOffsetString' defaultTimeZoneFormat x

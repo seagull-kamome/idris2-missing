@@ -9,7 +9,7 @@ import Data.Time.Clock.DiffTime
 import Data.Time.LocalTime.TimeZone
 import Text.Format.Decimal
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection

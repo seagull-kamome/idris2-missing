@@ -5,7 +5,7 @@
 |||
 module Data.Time.Calendar.CalendarDiffDays
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection
@@ -17,13 +17,12 @@ record CalendarDiffDays where
   constructor MkCalendarDiffDays
   month : Integer
   day : Integer
-
-%runElab derive "CalendarDiffDays" [Generic, Meta, Eq, DecEq]
+%runElab derive "CalendarDiffDays" [Generic, Meta, Eq, DecEq, Ord]
 
 
 public export
 Show CalendarDiffDays where
-  show x = "P" ++ show x.month ++ "M" ++ show x.day ++ "D"
+  show x = "P\{show  x.month}M\{show x.day}D"
 
 public export
 Semigroup CalendarDiffDays where

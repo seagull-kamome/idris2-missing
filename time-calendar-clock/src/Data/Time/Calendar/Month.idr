@@ -68,8 +68,8 @@ public export
 Show Month where
   show m = let
     (y, my) = toYearMonth m
-    in format' (record { width = Just 4, pad = Just '0' }) y
-       ++ format' (record { width = Just 2, pad = Just '0' }) my
+    in format' {width:=Just 4, pad:=Just '0'} y
+       ++ format' {width:=Just 2, pad:=Just '0'} my
 
 
 -- --------------------------------------------------------------------------

@@ -7,7 +7,7 @@ import Data.Time.Clock.Internal.UTCTime
 import Data.Time.LocalTime.TimeZone
 import Data.Time.LocalTime.TimeOfDay
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection

@@ -28,7 +28,7 @@ Monoid CalendarDiffTime where
 
 public export
 Show CalendarDiffTime where
-  show x = "P" ++ show x.month ++ "MT" ++ show x.time
+  show x = "P\{show x.month}MT\{show x.time}"
 
 export calendarTimeDays : CalendarDiffDays -> CalendarDiffTime
 calendarTimeDays x = MkCalendarDiffTime x.month $ daysToDiffTime x.day

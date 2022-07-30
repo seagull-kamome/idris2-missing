@@ -12,7 +12,7 @@ import public Data.Time.Clock.DiffTime
 import public Data.Time.Clock.UTCTime
 import Data.Time.Calendar
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection
@@ -23,7 +23,7 @@ public export
 record UniversalTime where
   constructor ModJulianDate
   modJulianDate : Rational
-%runElab derive "UniversalTime" [Generic, Eq, Ord, DecEq]
+%runElab derive "UniversalTime" [Generic, Meta, Eq, Ord, DecEq, Show]
 
 -- ---------------------------------------------------------------------------
 -- vim: tw=80 sw=2 expandtab :

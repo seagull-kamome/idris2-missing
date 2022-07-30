@@ -21,7 +21,7 @@ dayOfWeeks = [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
 
 public export Cast (Fin 7) DayOfWeek where cast x = index x dayOfWeeks
 public export
-Num a => Cast DayOfWeek a where
+Cast DayOfWeek Int where
   cast Sunday = 0
   cast Monday = 1
   cast Tuesday = 2
@@ -54,7 +54,7 @@ Eq DayOfWeek where
 
 public export
 Ord DayOfWeek where
-  compare x y = compare (cast {to=Fin 7} x) (cast y)
+  compare x y = compare (cast {to=Fin 7} x) (cast {to=Fin 7} y)
 
 public export
 Show DayOfWeek where
