@@ -21,7 +21,7 @@ jobs:
     container: snazzybucket/idris2:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install dependencies.
         run: |
           apt-get update
@@ -38,22 +38,29 @@ jobs:
       # Install dependet modules.
       #
       - name: checkout idris2-elab-util
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: stefan-hoeck/idris2-elab-util
           path: idris2-elab-util
-      - name: install idris2-sop
-        run: idris2 --install idris2-elab-util/elab-util.ipkg
-        shell: bash
-
 
       - name: checkout idris2-sop
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: stefan-hoeck/idris2-sop
           path: idris2-sop
-      - name: install idris2-sop
-        run: idris2 --install idris2-sop/sop.ipkg
+
+      - name: checkout idris2-newtype-deriving
+        uses: actions/checkout@v3
+        with:
+          repository: MarcelineVQ/idris2-newtype-deriving
+          path: idris2-newtype-deriving
+
+
+      - name: install dependencies.
+        run: |
+          idris2 --install idris2-elab-util/elab-util.ipkg
+          idris2 --install idris2-sop/sop.ipkg
+          idris2 --install idris2-newtype-deriving/newtype-deriving.ipkg
         shell: bash
 
       #
