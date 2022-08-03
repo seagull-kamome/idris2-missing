@@ -1,6 +1,7 @@
 
 PKG=system-io-handle
-IDRIS2_OPTS=--no-color
+DEPS=-p contrib -p elab-util -p sop -p newtype-deriving
+IDRIS2_OPTS+=
 
 
 build:
@@ -17,15 +18,18 @@ distclean:
 	find . -name *~ -delete
 	find . -name *.bak -delete
 
-check:
-	echo "ABCDE" | idris2 ${IDRIS2_OPTS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main
-	echo "ABCDE" | idris2 ${IDRIS2_OPTS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg node -x main
+check: check-chez check-node check-js check-refc
+check-chez:
+	echo "ABCDE" | idris2 ${IDRIS2_OPTS} ${DEPS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg chez -x main
+check-node:
+	echo "ABCDE" | idris2 ${IDRIS2_OPTS} ${DEPS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg node -x main
+check-js:
 	# Javascript backend wont support prim__os
 	# idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg javascript -o test-javascript.js
 	#
-	# refC backend wont support Data.Buffer.prim_getInt32
-	# idris2 -p ${PKG} tests/Test-System-IO-Terminal.idr --cg refc -o test-refc
-	# echo "ABDE" | build/exec/test-refc
+check-refc:#
+	idris2 ${IDRIS2_OPTS} ${DEPS} -p ${PKG} tests/Test-System-IO-Terminal.idr --cg refc -o test-refc
+	echo "ABDE" | build/exec/test-refc
 
 .PHONY: clean deepclean build install check check-local
 
