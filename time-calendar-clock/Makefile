@@ -1,6 +1,6 @@
 
 PKG=time-calendar-clock
-DEPS=-p idris2-missing-numeric -p elab-util -p sop
+DEPS=-p idris2-missing-numeric -p elab-util -p sop -p newtype-deriving -p contrib
 
 
 build:
@@ -17,11 +17,16 @@ clean:
 deepclean:
 	rm -rf build
 
-check:
+check: check-chez check-gambit check-node check-js check-refc
+check-chez:
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg chez -x main
+check-gambit:
 	# idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg gambit -x main
+check-node:
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg node -x main
+check-js:
 	# idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg javascript -o test-javascript.js
+check-refc:
 	idris2 ${DEPS} -p ${PKG} tests/Test-Data-Time-Clock.idr --cg refc -o test-refc
 	build/exec/test-refc
 
