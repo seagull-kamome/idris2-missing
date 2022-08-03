@@ -33,7 +33,7 @@ prim__win_GetConsoleScreenBufferInfo : AnyPtr -> Buffer -> PrimIO Int
 
 -- ---------------------------------------------------------------------------
 
-%foreign "C:ioctl,libc 6"
+%foreign "C:ioctl,libc 6,sys/ioctl.h"
          "javascript:lambda:(x, y, z) => 0"
 prim__ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 

@@ -31,22 +31,22 @@ stderr = MkHandle 2
 
 -- ---------------------------------------------------------------------------
 
-%foreign "C:read,libc 6"
+%foreign "C:read,libc 6,unistd.h"
          "node:lambda:(fd,b,n) => require('fs').readSync(Number(fd), b, 0, Number(n))"
 prim__unix_read_buffer : (fd:Int) -> (dst:Buffer) -> (bytes:Int) -> PrimIO Int
 
-%foreign "C:write,libc 6"
+%foreign "C:write,libc 6,unistd.h"
          "node:lambda:(fd,b,n) => require('fs').writeSync(fd, b, {length:n})"
 prim__unix_write_buffer : Int -> Buffer -> Int -> PrimIO Int
-%foreign "C:write,libc 6"
+%foreign "C:write,libc 6,unistd.h"
          "node:lambda:(fd,s,n) => require('fs').writeSync(Number(fd), s, {length:Number(n)})"
 prim__unix_write_string : Int -> String -> Int -> PrimIO Int
 
-%foreign "C:ioctl,libc 6"
+%foreign "C:ioctl,libc 6,sys/ioctl.h"
          "node:lambda:(fd,k,b) => require('ioctl').ioctl((Number(fd), k, b)"
 prim__unix_ioctl_ptr : Int -> Bits32 -> Buffer -> PrimIO Int
 
-%foreign "C:close,libc 6"
+%foreign "C:close,libc 6,unistd.h"
          "node:lambda:(fd) => require('fs').close(Number(fd))"
 prim_unix_close : (fd:Int) -> PrimIO Int
 
