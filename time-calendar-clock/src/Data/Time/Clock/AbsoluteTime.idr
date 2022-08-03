@@ -4,7 +4,7 @@ import Data.Fixed
 import Data.Time.Calendar.Days
 import Data.Time.Clock.DiffTime
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection
@@ -12,7 +12,7 @@ import Generics.Derive
 -- --------------------------------------------------------------------------
 
 export data AbsoluteTime = MkAbsoluteTime DiffTime
-%runElab derive "AbsoluteTime" [Generic, Eq, Ord, DecEq]
+%runElab derive "AbsoluteTime" [Generic, Meta, Eq, Ord, DecEq, Show]
 
 
 ||| The epoch of TAI, which is 1858-11-17 00:00:00 TAI.

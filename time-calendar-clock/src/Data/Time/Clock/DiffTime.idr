@@ -3,7 +3,7 @@ module Data.Time.Clock.DiffTime
 import Data.So
 import Data.Fixed
 
-import Generics.Derive
+import Generics.Newtype
 
 %default total
 %language ElabReflection

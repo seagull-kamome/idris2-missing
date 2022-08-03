@@ -146,7 +146,7 @@ systemLocalTimeYear = cast . prim__systemLocalTimeYear
 
 
 %foreign "scheme,chez:date-month"
-         "javascript:lambda:(x) => x.getMonth()"
+         "javascript:lambda:(x) => x.getMonth() + 1"
 export systemLocalTimeMonth : SystemLocalTime -> Int
 
 
@@ -174,7 +174,7 @@ export systemLocalTimeNanosecond : SystemLocalTime -> Int
 
 
 %foreign "scheme,chez:date-zone-offset"
-         "javascript:lambda:(x) => x.getTimezoneOffset()"
+         "javascript:lambda:(x) => (x.getTimezoneOffset() * 60)"
 export systemLocalTimeOffset : SystemLocalTime -> Int
 
 
