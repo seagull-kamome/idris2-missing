@@ -10,7 +10,6 @@ build: depends
 depends:
 	make -C foreign-javascript install
 	make -C data-containers install
-	make -C time-calendar-clock install
 	make -C system-io-handle install
 
 install:
