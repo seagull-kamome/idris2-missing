@@ -8,7 +8,6 @@ build: depends
 	# idris2 --build idris2-missing.ipkg
 
 depends:
-	make -C idris2-missing-numeric install
 	make -C foreign-javascript install
 	make -C data-containers install
 	make -C time-calendar-clock install

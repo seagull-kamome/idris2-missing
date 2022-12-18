@@ -2,6 +2,12 @@
 
 My playground for learning Idris2.
 
+This repository contains few packages.
+
+  - __idris2-missing-numeric__ => move to independent repo.
+  - system-io-handle
+  - time-calendar-clock
+
 
 ## other resources of idris2
 
